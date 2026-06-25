@@ -11,11 +11,11 @@ import Leaderboard from './components/Leaderboard';
 import ConfirmModal from './components/ConfirmModal';
 import UsersList from './components/UsersList';
 import { motion, AnimatePresence } from 'motion/react';
-import { BookOpen, Award, Layers, Plus, Activity, BookMarked, Settings, Sparkles, LogOut, Trash2, User as UserIcon, Users, Trophy, Sun, Moon } from 'lucide-react';
+import { BookOpen, Award, Layers, Plus, Activity, BookMarked, Settings, Sparkles, LogOut, Trash2, User as UserIcon, Users, Trophy, Sun, Moon, ArrowLeft } from 'lucide-react';
 
 export default function App() {
   // Navigation State
-  const [activeTab, setActiveTab] = useState<'dashboard' | 'words' | 'test' | 'profile' | 'leaderboard' | 'users'>('dashboard');
+  const [activeTab, setActiveTab] = useState<'dashboard' | 'words' | 'test' | 'profile' | 'leaderboard' | 'users' | 'add-word'>('dashboard');
   
   // Current Logged-in User
   const [currentUser, setCurrentUser] = useState<User | null>(null);
@@ -491,6 +491,20 @@ export default function App() {
                 Lug'at
               </button>
               <button
+                onClick={() => {
+                  setEditingWord(null);
+                  setActiveTab('add-word');
+                }}
+                className={`px-4.5 py-2.5 rounded-xl text-sm font-bold transition-all cursor-pointer ${
+                  activeTab === 'add-word'
+                    ? 'bg-white dark:bg-slate-700 text-indigo-700 dark:text-indigo-300 shadow-sm'
+                    : 'text-slate-500 hover:text-slate-900 dark:text-slate-400 dark:hover:text-slate-200'
+                }`}
+                id="header-tab-add-word"
+              >
+                So'z qo'shish
+              </button>
+              <button
                 onClick={() => setActiveTab('test')}
                 className={`px-4.5 py-2.5 rounded-xl text-sm font-bold transition-all cursor-pointer ${
                   activeTab === 'test'
@@ -540,9 +554,13 @@ export default function App() {
               <button
                 onClick={() => {
                   setEditingWord(null);
-                  setIsFormOpen(true);
+                  setActiveTab('add-word');
                 }}
-                className="hidden sm:inline-flex items-center justify-center gap-1.5 rounded-xl bg-slate-900 hover:bg-slate-800 dark:bg-indigo-600 dark:hover:bg-indigo-700 text-white px-4 py-2.5 text-xs font-bold transition-all hover:shadow-md cursor-pointer active:scale-95"
+                className={`hidden sm:inline-flex items-center justify-center gap-1.5 rounded-xl px-4 py-2.5 text-xs font-bold transition-all hover:shadow-md cursor-pointer active:scale-95 ${
+                  activeTab === 'add-word'
+                    ? 'bg-indigo-600 hover:bg-indigo-700 text-white shadow-md shadow-indigo-200 dark:shadow-none'
+                    : 'bg-slate-900 hover:bg-slate-800 dark:bg-indigo-600 dark:hover:bg-indigo-700 text-white'
+                }`}
                 id="header-btn-add-word"
               >
                 <Plus className="h-4 w-4" />
@@ -589,35 +607,10 @@ export default function App() {
       {/* Main Content Area */}
       <main className="flex-1 max-w-7xl w-full mx-auto px-4 sm:px-6 lg:px-8 py-8 relative z-10">
         
-        {/* Dynamic View Swapper with slide-over Form */}
+        {/* Dynamic View Swapper */}
         <div className="grid grid-cols-1 gap-8 relative">
           
           <AnimatePresence mode="wait">
-            
-            {/* Slide-over Word Creator Overlay */}
-            {isFormOpen && (
-              <motion.div
-                initial={{ opacity: 0 }}
-                animate={{ opacity: 1 }}
-                exit={{ opacity: 0 }}
-                className="fixed inset-0 bg-slate-900/40 backdrop-blur-xs z-50 flex items-center justify-center p-4 overflow-y-auto"
-                onClick={() => setIsFormOpen(false)}
-                id="form-modal-overlay"
-              >
-                <div onClick={(e) => e.stopPropagation()} className="w-full max-w-2xl">
-                  <AddWordForm
-                    categories={categories}
-                    editingWord={editingWord}
-                    onSave={handleSaveWord}
-                    onCancel={() => {
-                      setIsFormOpen(false);
-                      setEditingWord(null);
-                    }}
-                    onAddCategory={handleAddCategory}
-                  />
-                </div>
-              </motion.div>
-            )}
 
             {/* ACTIVE TAB VIEWS */}
             {activeTab === 'dashboard' && (
@@ -651,14 +644,57 @@ export default function App() {
                   categories={categories}
                   onAddWordClick={() => {
                     setEditingWord(null);
-                    setIsFormOpen(true);
+                    setActiveTab('add-word');
                   }}
                   onEditWord={(word) => {
                     setEditingWord(word);
-                    setIsFormOpen(true);
+                    setActiveTab('add-word');
                   }}
                   onDeleteWord={handleDeleteWord}
                 />
+              </motion.div>
+            )}
+
+            {activeTab === 'add-word' && (
+              <motion.div
+                key="add-word-tab"
+                initial={{ opacity: 0, y: 15 }}
+                animate={{ opacity: 1, y: 0 }}
+                exit={{ opacity: 0, y: -15 }}
+                transition={{ duration: 0.3 }}
+              >
+                <div className="max-w-3xl mx-auto space-y-6">
+                  {/* Navigation breadcrumb */}
+                  <div className="flex items-center justify-between bg-white dark:bg-slate-900 px-6 py-4 rounded-3xl border border-slate-200/60 dark:border-slate-800 shadow-xs">
+                    <button
+                      onClick={() => {
+                        setActiveTab('words');
+                        setEditingWord(null);
+                      }}
+                      className="inline-flex items-center gap-2 px-4 py-2 rounded-2xl bg-slate-50 dark:bg-slate-850 border border-slate-200/40 dark:border-slate-700/65 hover:bg-slate-100 text-slate-700 dark:text-slate-300 text-xs font-bold transition-all cursor-pointer shadow-2xs active:scale-95"
+                    >
+                      <ArrowLeft className="h-4 w-4" />
+                      Lug'atga qaytish
+                    </button>
+                    <span className="text-xs text-slate-400 dark:text-slate-500 font-bold uppercase tracking-wider">
+                      {editingWord ? "Tahrirlash rejimi" : "Yangi so'z qo'shish sahifasi"}
+                    </span>
+                  </div>
+
+                  <AddWordForm
+                    categories={categories}
+                    editingWord={editingWord}
+                    onSave={(wordData) => {
+                      handleSaveWord(wordData);
+                      setActiveTab('words');
+                    }}
+                    onCancel={() => {
+                      setActiveTab('words');
+                      setEditingWord(null);
+                    }}
+                    onAddCategory={handleAddCategory}
+                  />
+                </div>
               </motion.div>
             )}
 
@@ -736,62 +772,75 @@ export default function App() {
       </main>
 
       {/* Footer Navigation for Mobile (sticky on bottom for touch precision) */}
-      <nav className="md:hidden sticky bottom-0 z-40 bg-white dark:bg-slate-900 border-t border-slate-100 dark:border-slate-800 flex justify-around py-2.5 px-1.5 shadow-lg">
+      <nav className="md:hidden sticky bottom-0 z-40 bg-white dark:bg-slate-900 border-t border-slate-100 dark:border-slate-800 flex justify-around py-2 px-1 shadow-lg gap-0.5">
         <button
           onClick={() => setActiveTab('dashboard')}
-          className={`flex flex-col items-center gap-0.5 p-1 text-[10px] font-semibold cursor-pointer ${
+          className={`flex flex-col items-center gap-0.5 p-1 text-[9px] font-semibold cursor-pointer ${
             activeTab === 'dashboard' ? 'text-indigo-600 dark:text-indigo-400 font-bold' : 'text-slate-400 dark:text-slate-500'
           }`}
         >
-          <Activity className="h-4.5 w-4.5" />
+          <Activity className="h-4 w-4" />
           <span>Asosiy</span>
         </button>
         <button
           onClick={() => setActiveTab('words')}
-          className={`flex flex-col items-center gap-0.5 p-1 text-[10px] font-semibold cursor-pointer ${
+          className={`flex flex-col items-center gap-0.5 p-1 text-[9px] font-semibold cursor-pointer ${
             activeTab === 'words' ? 'text-indigo-600 dark:text-indigo-400 font-bold' : 'text-slate-400 dark:text-slate-500'
           }`}
         >
-          <BookMarked className="h-4.5 w-4.5" />
+          <BookMarked className="h-4 w-4" />
           <span>Lug'at</span>
         </button>
         <button
+          onClick={() => {
+            setEditingWord(null);
+            setActiveTab('add-word');
+          }}
+          className={`flex flex-col items-center gap-0.5 p-1 text-[9px] font-semibold cursor-pointer ${
+            activeTab === 'add-word' ? 'text-indigo-600 dark:text-indigo-400 font-bold' : 'text-slate-400 dark:text-slate-500'
+          }`}
+          id="mobile-nav-add-word"
+        >
+          <Plus className="h-4 w-4" />
+          <span>Qo'shish</span>
+        </button>
+        <button
           onClick={() => setActiveTab('test')}
-          className={`flex flex-col items-center gap-0.5 p-1 text-[10px] font-semibold cursor-pointer ${
+          className={`flex flex-col items-center gap-0.5 p-1 text-[9px] font-semibold cursor-pointer ${
             activeTab === 'test' ? 'text-indigo-600 dark:text-indigo-400 font-bold' : 'text-slate-400 dark:text-slate-500'
           }`}
         >
-          <Award className="h-4.5 w-4.5" />
+          <Award className="h-4 w-4" />
           <span>Test</span>
         </button>
         <button
           onClick={() => setActiveTab('leaderboard')}
-          className={`flex flex-col items-center gap-0.5 p-1 text-[10px] font-semibold cursor-pointer ${
+          className={`flex flex-col items-center gap-0.5 p-1 text-[9px] font-semibold cursor-pointer ${
             activeTab === 'leaderboard' ? 'text-indigo-600 dark:text-indigo-400 font-bold' : 'text-slate-400 dark:text-slate-500'
           }`}
           id="mobile-nav-leaderboard"
         >
-          <Trophy className="h-4.5 w-4.5" />
+          <Trophy className="h-4 w-4" />
           <span>Reyting</span>
         </button>
         <button
           onClick={() => setActiveTab('users')}
-          className={`flex flex-col items-center gap-0.5 p-1 text-[10px] font-semibold cursor-pointer ${
+          className={`flex flex-col items-center gap-0.5 p-1 text-[9px] font-semibold cursor-pointer ${
             activeTab === 'users' ? 'text-indigo-600 dark:text-indigo-400 font-bold' : 'text-slate-400 dark:text-slate-500'
           }`}
           id="mobile-nav-users"
         >
-          <Users className="h-4.5 w-4.5" />
+          <Users className="h-4 w-4" />
           <span>A'zolar</span>
         </button>
         <button
           onClick={() => setActiveTab('profile')}
-          className={`flex flex-col items-center gap-0.5 p-1 text-[10px] font-semibold cursor-pointer ${
+          className={`flex flex-col items-center gap-0.5 p-1 text-[9px] font-semibold cursor-pointer ${
             activeTab === 'profile' ? 'text-indigo-600 dark:text-indigo-400 font-bold' : 'text-slate-400 dark:text-slate-500'
           }`}
           id="mobile-nav-profile"
         >
-          <UserIcon className="h-4.5 w-4.5" />
+          <UserIcon className="h-4 w-4" />
           <span>Profil</span>
         </button>
       </nav>
