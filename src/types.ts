@@ -61,5 +61,6 @@ export interface User {
   avatar: string; // Avatar seed or index
   createdAt: string;
   passwordHash: string; // Standard password verification representation
+  role?: 'admin' | 'user';
 }
 

@@ -9,12 +9,13 @@ import Auth from './components/Auth';
 import UserProfile from './components/UserProfile';
 import Leaderboard from './components/Leaderboard';
 import ConfirmModal from './components/ConfirmModal';
+import UsersList from './components/UsersList';
 import { motion, AnimatePresence } from 'motion/react';
-import { BookOpen, Award, Layers, Plus, Activity, BookMarked, Settings, Sparkles, LogOut, Trash2, User as UserIcon, Trophy, Sun, Moon } from 'lucide-react';
+import { BookOpen, Award, Layers, Plus, Activity, BookMarked, Settings, Sparkles, LogOut, Trash2, User as UserIcon, Users, Trophy, Sun, Moon } from 'lucide-react';
 
 export default function App() {
   // Navigation State
-  const [activeTab, setActiveTab] = useState<'dashboard' | 'words' | 'test' | 'profile' | 'leaderboard'>('dashboard');
+  const [activeTab, setActiveTab] = useState<'dashboard' | 'words' | 'test' | 'profile' | 'leaderboard' | 'users'>('dashboard');
   
   // Current Logged-in User
   const [currentUser, setCurrentUser] = useState<User | null>(null);
@@ -130,7 +131,11 @@ export default function App() {
     const storedUser = localStorage.getItem('yodlash_current_user');
     if (storedUser) {
       try {
-        setCurrentUser(JSON.parse(storedUser));
+        const parsed: User = JSON.parse(storedUser);
+        if (parsed.email && parsed.email.toLowerCase() === 'crazyaivodeos@gmail.com') {
+          parsed.role = 'admin';
+        }
+        setCurrentUser(parsed);
       } catch (e) {
         localStorage.removeItem('yodlash_current_user');
       }
@@ -216,8 +221,12 @@ export default function App() {
 
   // Auth Callbacks
   const handleLoginSuccess = (user: User) => {
-    setCurrentUser(user);
-    localStorage.setItem('yodlash_current_user', JSON.stringify(user));
+    const updatedUser = { ...user };
+    if (updatedUser.email && updatedUser.email.toLowerCase() === 'crazyaivodeos@gmail.com') {
+      updatedUser.role = 'admin';
+    }
+    setCurrentUser(updatedUser);
+    localStorage.setItem('yodlash_current_user', JSON.stringify(updatedUser));
   };
 
   const handleLogout = () => {
@@ -238,15 +247,19 @@ export default function App() {
   };
 
   const handleUpdateUser = (updatedUser: User) => {
-    setCurrentUser(updatedUser);
-    localStorage.setItem('yodlash_current_user', JSON.stringify(updatedUser));
+    const finalUser = { ...updatedUser };
+    if (finalUser.email && finalUser.email.toLowerCase() === 'crazyaivodeos@gmail.com') {
+      finalUser.role = 'admin';
+    }
+    setCurrentUser(finalUser);
+    localStorage.setItem('yodlash_current_user', JSON.stringify(finalUser));
     
     // Also update in global users database
     const storedUsersRaw = localStorage.getItem('yodlash_users_db');
     if (storedUsersRaw) {
       try {
         const usersDb: User[] = JSON.parse(storedUsersRaw);
-        const updatedDb = usersDb.map(u => u.id === updatedUser.id ? updatedUser : u);
+        const updatedDb = usersDb.map(u => u.id === finalUser.id ? finalUser : u);
         localStorage.setItem('yodlash_users_db', JSON.stringify(updatedDb));
       } catch (e) {
         console.error("Failed to update user database:", e);
@@ -499,6 +512,17 @@ export default function App() {
                 Reyting
               </button>
               <button
+                onClick={() => setActiveTab('users')}
+                className={`px-4.5 py-2.5 rounded-xl text-sm font-bold transition-all cursor-pointer ${
+                  activeTab === 'users'
+                    ? 'bg-white dark:bg-slate-700 text-indigo-700 dark:text-indigo-300 shadow-sm'
+                    : 'text-slate-500 hover:text-slate-900 dark:text-slate-400 dark:hover:text-slate-200'
+                }`}
+                id="header-tab-users"
+              >
+                Foydalanuvchilar
+              </button>
+              <button
                 onClick={() => setActiveTab('profile')}
                 className={`px-4.5 py-2.5 rounded-xl text-sm font-bold transition-all cursor-pointer ${
                   activeTab === 'profile'
@@ -673,6 +697,21 @@ export default function App() {
               </motion.div>
             )}
 
+            {activeTab === 'users' && (
+              <motion.div
+                key="users-tab"
+                initial={{ opacity: 0, y: 15 }}
+                animate={{ opacity: 1, y: 0 }}
+                exit={{ opacity: 0, y: -15 }}
+                transition={{ duration: 0.3 }}
+              >
+                <UsersList
+                  currentUser={currentUser}
+                  onUpdateCurrentUser={handleUpdateUser}
+                />
+              </motion.div>
+            )}
+
             {activeTab === 'profile' && (
               <motion.div
                 key="profile-tab"
@@ -697,52 +736,62 @@ export default function App() {
       </main>
 
       {/* Footer Navigation for Mobile (sticky on bottom for touch precision) */}
-      <nav className="md:hidden sticky bottom-0 z-40 bg-white dark:bg-slate-900 border-t border-slate-100 dark:border-slate-800 flex justify-around py-3 px-2 shadow-lg">
+      <nav className="md:hidden sticky bottom-0 z-40 bg-white dark:bg-slate-900 border-t border-slate-100 dark:border-slate-800 flex justify-around py-2.5 px-1.5 shadow-lg">
         <button
           onClick={() => setActiveTab('dashboard')}
-          className={`flex flex-col items-center gap-1 p-2 text-xs font-semibold cursor-pointer ${
+          className={`flex flex-col items-center gap-0.5 p-1 text-[10px] font-semibold cursor-pointer ${
             activeTab === 'dashboard' ? 'text-indigo-600 dark:text-indigo-400 font-bold' : 'text-slate-400 dark:text-slate-500'
           }`}
         >
-          <Activity className="h-5 w-5" />
-          <span>Bosh sahifa</span>
+          <Activity className="h-4.5 w-4.5" />
+          <span>Asosiy</span>
         </button>
         <button
           onClick={() => setActiveTab('words')}
-          className={`flex flex-col items-center gap-1 p-2 text-xs font-semibold cursor-pointer ${
+          className={`flex flex-col items-center gap-0.5 p-1 text-[10px] font-semibold cursor-pointer ${
             activeTab === 'words' ? 'text-indigo-600 dark:text-indigo-400 font-bold' : 'text-slate-400 dark:text-slate-500'
           }`}
         >
-          <BookMarked className="h-5 w-5" />
+          <BookMarked className="h-4.5 w-4.5" />
           <span>Lug'at</span>
         </button>
         <button
           onClick={() => setActiveTab('test')}
-          className={`flex flex-col items-center gap-1 p-2 text-xs font-semibold cursor-pointer ${
+          className={`flex flex-col items-center gap-0.5 p-1 text-[10px] font-semibold cursor-pointer ${
             activeTab === 'test' ? 'text-indigo-600 dark:text-indigo-400 font-bold' : 'text-slate-400 dark:text-slate-500'
           }`}
         >
-          <Award className="h-5 w-5" />
+          <Award className="h-4.5 w-4.5" />
           <span>Test</span>
         </button>
         <button
           onClick={() => setActiveTab('leaderboard')}
-          className={`flex flex-col items-center gap-1 p-2 text-xs font-semibold cursor-pointer ${
+          className={`flex flex-col items-center gap-0.5 p-1 text-[10px] font-semibold cursor-pointer ${
             activeTab === 'leaderboard' ? 'text-indigo-600 dark:text-indigo-400 font-bold' : 'text-slate-400 dark:text-slate-500'
           }`}
           id="mobile-nav-leaderboard"
         >
-          <Trophy className="h-5 w-5" />
+          <Trophy className="h-4.5 w-4.5" />
           <span>Reyting</span>
         </button>
         <button
+          onClick={() => setActiveTab('users')}
+          className={`flex flex-col items-center gap-0.5 p-1 text-[10px] font-semibold cursor-pointer ${
+            activeTab === 'users' ? 'text-indigo-600 dark:text-indigo-400 font-bold' : 'text-slate-400 dark:text-slate-500'
+          }`}
+          id="mobile-nav-users"
+        >
+          <Users className="h-4.5 w-4.5" />
+          <span>A'zolar</span>
+        </button>
+        <button
           onClick={() => setActiveTab('profile')}
-          className={`flex flex-col items-center gap-1 p-2 text-xs font-semibold cursor-pointer ${
+          className={`flex flex-col items-center gap-0.5 p-1 text-[10px] font-semibold cursor-pointer ${
             activeTab === 'profile' ? 'text-indigo-600 dark:text-indigo-400 font-bold' : 'text-slate-400 dark:text-slate-500'
           }`}
           id="mobile-nav-profile"
         >
-          <UserIcon className="h-5 w-5" />
+          <UserIcon className="h-4.5 w-4.5" />
           <span>Profil</span>
         </button>
       </nav>

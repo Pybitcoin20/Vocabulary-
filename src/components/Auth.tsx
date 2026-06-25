@@ -79,6 +79,7 @@ export default function Auth({ onLoginSuccess }: AuthProps) {
       }
 
       // Register new user
+      const isUserAdmin = email.trim().toLowerCase() === 'crazyaivodeos@gmail.com';
       const newUser: UserType = {
         id: `u_${Date.now()}`,
         username: normalizedUsername,
@@ -87,6 +88,7 @@ export default function Auth({ onLoginSuccess }: AuthProps) {
         avatar: selectedAvatar,
         createdAt: new Date().toISOString(),
         passwordHash: password, // For mock client-side auth, we store password
+        role: isUserAdmin ? 'admin' : 'user',
       };
 
       const updatedUsersDb = [...usersDb, newUser];
