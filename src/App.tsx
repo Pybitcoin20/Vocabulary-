@@ -158,8 +158,8 @@ export default function App() {
     const storedStreak = localStorage.getItem(`yodlash_streak_${userId}`);
     const storedLastStudy = localStorage.getItem(`yodlash_last_study_${userId}`);
 
-    const loadedWords = storedWords ? JSON.parse(storedWords) : INITIAL_WORDS;
-    const loadedCategories = storedCategories ? JSON.parse(storedCategories) : INITIAL_CATEGORIES;
+    const loadedWords = storedWords ? JSON.parse(storedWords) : JSON.parse(JSON.stringify(INITIAL_WORDS));
+    const loadedCategories = storedCategories ? JSON.parse(storedCategories) : JSON.parse(JSON.stringify(INITIAL_CATEGORIES));
     const loadedHistory = storedHistory ? JSON.parse(storedHistory) : [];
     
     // Streak calculations
@@ -584,7 +584,13 @@ export default function App() {
                   className={`hidden sm:flex items-center gap-2 cursor-pointer p-1.5 rounded-xl hover:bg-slate-50 dark:hover:bg-slate-800 transition-all ${activeTab === 'profile' ? 'bg-indigo-50/50 dark:bg-indigo-950/30' : ''}`}
                   title="Shaxsiy profilga o'tish"
                 >
-                  <span className="text-2xl" title={currentUser.fullName}>{currentUser.avatar}</span>
+                  <div className="w-8 h-8 rounded-full bg-slate-50 dark:bg-slate-800 flex items-center justify-center overflow-hidden shrink-0 border border-slate-200 dark:border-slate-700" title={currentUser.fullName}>
+                    {(currentUser.avatar && (currentUser.avatar.startsWith('http') || currentUser.avatar.startsWith('data:image'))) ? (
+                      <img src={currentUser.avatar} alt="Avatar" className="w-full h-full object-cover" referrerPolicy="no-referrer" />
+                    ) : (
+                      <span className="text-xl leading-none">{currentUser.avatar || '👤'}</span>
+                    )}
+                  </div>
                   <div className="hidden lg:block text-left leading-none">
                     <span className="text-xs font-bold text-slate-800 dark:text-slate-200 block max-w-[100px] truncate">{currentUser.fullName}</span>
                     <span className="text-[10px] text-slate-400 dark:text-slate-500 font-medium block">@{currentUser.username}</span>

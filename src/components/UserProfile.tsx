@@ -15,7 +15,7 @@ interface UserProfileProps {
 }
 
 const AVATAR_PRESETS = [
-  '🦊', '🦁', '🦉', '🐼', '🐨', '🐸', '🦄', '🐝', '🦖', '🚀', '🎨', '🧠'
+  '🧠', '🚀', '🎨', '💻', '📚', '🌍', '⭐', '🔥', '🎯', '💡', '🏆', '🎭'
 ];
 
 export default function UserProfile({ user, onUpdateUser, words, history, stats }: UserProfileProps) {
@@ -156,9 +156,13 @@ export default function UserProfile({ user, onUpdateUser, words, history, stats 
             <div className="absolute right-0 top-0 -mr-12 -mt-12 h-36 w-36 rounded-full bg-indigo-50/50 dark:bg-indigo-950/10 blur-2xl pointer-events-none"></div>
             
             <div className="flex flex-col items-center text-center mt-4">
-              <span className="text-6xl p-4 bg-slate-50 dark:bg-slate-800 border border-slate-100 dark:border-slate-700 rounded-full shadow-inner select-none transition-transform hover:scale-105 duration-200">
-                {user.avatar}
-              </span>
+              <div className="w-24 h-24 bg-slate-50 dark:bg-slate-800 border border-slate-100 dark:border-slate-700 rounded-full shadow-inner select-none transition-transform hover:scale-105 duration-200 flex items-center justify-center overflow-hidden">
+                {(user.avatar && (user.avatar.startsWith('http') || user.avatar.startsWith('data:image'))) ? (
+                  <img src={user.avatar} alt="Avatar" className="w-full h-full object-cover" referrerPolicy="no-referrer" />
+                ) : (
+                  <span className="text-5xl">{user.avatar || '👤'}</span>
+                )}
+              </div>
               
               <h3 className="mt-5 text-2xl font-extrabold text-slate-800 dark:text-slate-100 tracking-tight">
                 {user.fullName}
@@ -264,17 +268,34 @@ export default function UserProfile({ user, onUpdateUser, words, history, stats 
                     </div>
                   </div>
 
-                  <div className="space-y-1.5">
+                  <div className="space-y-3">
                     <label className="text-[10px] font-bold text-slate-400 dark:text-slate-500 uppercase tracking-wider block">
-                      Avatar tanlang
+                      Profil rasmi (Avatar)
                     </label>
-                    <div className="grid grid-cols-4 gap-1.5 bg-slate-50 dark:bg-slate-950 border border-slate-100 dark:border-slate-850 p-2.5 rounded-2xl max-h-24 overflow-y-auto">
+
+                    {/* Real-time Preview */}
+                    <div className="flex items-center gap-3 bg-slate-50 dark:bg-slate-950 p-2.5 rounded-2xl border border-slate-100 dark:border-slate-850">
+                      <div className="w-12 h-12 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-full flex items-center justify-center overflow-hidden shrink-0 shadow-inner">
+                        {(selectedAvatar && (selectedAvatar.startsWith('http') || selectedAvatar.startsWith('data:image'))) ? (
+                          <img src={selectedAvatar} alt="Rasm" className="w-full h-full object-cover" referrerPolicy="no-referrer" />
+                        ) : (
+                          <span className="text-2xl">{selectedAvatar || '👤'}</span>
+                        )}
+                      </div>
+                      <div className="text-[10px] text-slate-400 dark:text-slate-500 leading-normal">
+                        <p className="font-bold text-slate-700 dark:text-slate-300">Yangi rasm ko'rinishi</p>
+                        <p>Fayl yuklang yoki havolasini qo'ying.</p>
+                      </div>
+                    </div>
+
+                    {/* Presets Grid */}
+                    <div className="grid grid-cols-6 gap-1.5 bg-slate-50 dark:bg-slate-950 border border-slate-100 dark:border-slate-850 p-2 rounded-2xl max-h-24 overflow-y-auto">
                       {AVATAR_PRESETS.map((av) => (
                         <button
                           key={av}
                           type="button"
                           onClick={() => setSelectedAvatar(av)}
-                          className={`text-xl p-1.5 rounded-xl transition-all flex items-center justify-center cursor-pointer ${
+                          className={`text-xl p-1 rounded-xl transition-all flex items-center justify-center cursor-pointer ${
                             selectedAvatar === av 
                               ? 'bg-white dark:bg-slate-800 border-2 border-indigo-500 dark:border-indigo-400 shadow-xs scale-105' 
                               : 'hover:bg-slate-100 dark:hover:bg-slate-800'
@@ -283,6 +304,41 @@ export default function UserProfile({ user, onUpdateUser, words, history, stats 
                           {av}
                         </button>
                       ))}
+                    </div>
+
+                    {/* Custom Image File Upload & Image URL */}
+                    <div className="space-y-1.5">
+                      <label className="flex flex-col items-center justify-center border border-dashed border-slate-200 dark:border-slate-800 rounded-2xl p-2 bg-slate-50/50 dark:bg-slate-950/50 hover:bg-slate-100 dark:hover:bg-slate-900 transition-all cursor-pointer text-[11px] font-semibold text-slate-500 hover:text-indigo-500">
+                        <span>Fayldan rasm yuklash</span>
+                        <input 
+                          type="file" 
+                          accept="image/*" 
+                          onChange={(e) => {
+                            const file = e.target.files?.[0];
+                            if (file) {
+                              const reader = new FileReader();
+                              reader.onloadend = () => {
+                                if (typeof reader.result === 'string') {
+                                  setSelectedAvatar(reader.result);
+                                }
+                              };
+                              reader.readAsDataURL(file);
+                            }
+                          }}
+                          className="hidden" 
+                        />
+                      </label>
+                      <input
+                        type="text"
+                        value={selectedAvatar.startsWith('data:') ? '' : selectedAvatar}
+                        onChange={(e) => {
+                          if (e.target.value.trim()) {
+                            setSelectedAvatar(e.target.value.trim());
+                          }
+                        }}
+                        placeholder="Yoki rasm havolasi (URL): https://..."
+                        className="w-full rounded-2xl border border-slate-200 dark:border-slate-800 bg-slate-50/50 dark:bg-slate-950 px-3 py-2 text-slate-800 dark:text-slate-100 placeholder-slate-400 dark:placeholder-slate-500 outline-none transition-all focus:border-indigo-500 focus:bg-white dark:focus:bg-slate-900 text-xs font-medium"
+                      />
                     </div>
                   </div>
 

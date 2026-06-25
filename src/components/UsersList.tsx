@@ -421,9 +421,13 @@ export default function UsersList({ currentUser, onUpdateCurrentUser }: UsersLis
 
                     {/* User Identity Row */}
                     <div className="flex items-start gap-4">
-                      <span className="text-4xl bg-slate-50 dark:bg-slate-950 p-3 rounded-2xl group-hover:scale-105 transition-transform duration-200">
-                        {u.avatar || '👤'}
-                      </span>
+                      <div className="w-14 h-14 bg-slate-50 dark:bg-slate-950 rounded-2xl group-hover:scale-105 transition-transform duration-200 flex items-center justify-center overflow-hidden shrink-0 border border-slate-100 dark:border-slate-850">
+                        {(u.avatar && (u.avatar.startsWith('http') || u.avatar.startsWith('data:image'))) ? (
+                          <img src={u.avatar} alt="Avatar" className="w-full h-full object-cover" referrerPolicy="no-referrer" />
+                        ) : (
+                          <span className="text-3xl select-none">{u.avatar || '👤'}</span>
+                        )}
+                      </div>
                       <div className="space-y-1">
                         <h3 className="font-serif italic text-base text-slate-800 dark:text-slate-100 group-hover:text-indigo-600 dark:group-hover:text-indigo-400 transition-colors flex items-center gap-1.5">
                           {u.fullName}
@@ -545,9 +549,13 @@ export default function UsersList({ currentUser, onUpdateCurrentUser }: UsersLis
 
                   {/* Profile Info block */}
                   <div className="flex flex-col items-center text-center mt-3">
-                    <span className="text-6xl p-4 bg-slate-50 dark:bg-slate-950 border border-slate-100 dark:border-slate-800 rounded-full shadow-inner select-none transition-transform hover:scale-105 duration-200">
-                      {currentSelectedUserSynced?.avatar}
-                    </span>
+                    <div className="w-24 h-24 bg-slate-50 dark:bg-slate-950 border border-slate-100 dark:border-slate-800 rounded-full shadow-inner select-none transition-transform hover:scale-105 duration-200 flex items-center justify-center overflow-hidden shrink-0">
+                      {(currentSelectedUserSynced?.avatar && (currentSelectedUserSynced.avatar.startsWith('http') || currentSelectedUserSynced.avatar.startsWith('data:image'))) ? (
+                        <img src={currentSelectedUserSynced.avatar} alt="Avatar" className="w-full h-full object-cover" referrerPolicy="no-referrer" />
+                      ) : (
+                        <span className="text-5xl">{currentSelectedUserSynced?.avatar || '👤'}</span>
+                      )}
+                    </div>
 
                     <h3 className="mt-5 text-2xl font-serif italic text-slate-900 dark:text-slate-100 leading-tight">
                       {currentSelectedUserSynced?.fullName}

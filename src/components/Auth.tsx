@@ -8,7 +8,7 @@ interface AuthProps {
 }
 
 const AVATAR_PRESETS = [
-  '🦊', '🦁', '🦉', '🐼', '🐨', '🐸', '🦄', '🐝', '🦖', '🚀', '🎨', '🧠'
+  '🧠', '🚀', '🎨', '💻', '📚', '🌍', '⭐', '🔥', '🎯', '💡', '🏆', '🎭'
 ];
 
 export default function Auth({ onLoginSuccess }: AuthProps) {
@@ -30,9 +30,10 @@ export default function Auth({ onLoginSuccess }: AuthProps) {
     setError('');
     setSuccess('');
 
-    const normalizedUsername = username.trim().toLowerCase();
+    const normalizedUsername = username.trim().toLowerCase().replace(/^@/, '');
+    const trimmedPassword = password.trim();
     
-    if (!normalizedUsername || !password) {
+    if (!normalizedUsername || !trimmedPassword) {
       setError("Iltimos, barcha maydonlarni to'ldiring.");
       return;
     }
@@ -44,7 +45,48 @@ export default function Auth({ onLoginSuccess }: AuthProps) {
 
     // Get existing users database from localStorage
     const storedUsersRaw = localStorage.getItem('yodlash_users_db');
-    const usersDb: UserType[] = storedUsersRaw ? JSON.parse(storedUsersRaw) : [];
+    let usersDb: UserType[] = [];
+    if (storedUsersRaw) {
+      try {
+        usersDb = JSON.parse(storedUsersRaw);
+      } catch (e) {
+        usersDb = [];
+      }
+    }
+
+    // If usersDb is empty, seed default users immediately to avoid any first-render race condition
+    if (usersDb.length === 0) {
+      usersDb = [
+        {
+          id: 'u_demo',
+          username: 'demo',
+          email: 'demo@example.com',
+          fullName: 'Demo Foydalanuvchi',
+          avatar: '🧠',
+          createdAt: new Date().toISOString(),
+          passwordHash: 'demo123'
+        },
+        {
+          id: 'u_sardor',
+          username: 'sardor_bek',
+          email: 'sardor@example.com',
+          fullName: 'Sardor Rustamov',
+          avatar: '🧠',
+          createdAt: new Date().toISOString(),
+          passwordHash: 'sardor123'
+        },
+        {
+          id: 'u_noila',
+          username: 'noila_99',
+          email: 'noila@example.com',
+          fullName: 'Noila Karimova',
+          avatar: '📚',
+          createdAt: new Date().toISOString(),
+          passwordHash: 'noila123'
+        }
+      ];
+      localStorage.setItem('yodlash_users_db', JSON.stringify(usersDb));
+    }
 
     if (mode === 'register') {
       if (!fullName.trim()) {
@@ -55,23 +97,23 @@ export default function Auth({ onLoginSuccess }: AuthProps) {
         setError("Iltimos, to'g'ri e-pochta manzilini kiriting.");
         return;
       }
-      if (password.length < 5) {
+      if (trimmedPassword.length < 5) {
         setError("Parol kamida 5 ta belgidan iborat bo'lishi kerak.");
         return;
       }
-      if (password !== confirmPassword) {
+      if (trimmedPassword !== confirmPassword.trim()) {
         setError("Kiritilgan parollar bir-biriga mos kelmadi.");
         return;
       }
 
-      // Check if username is already taken
-      const usernameExists = usersDb.some(u => u.username === normalizedUsername);
+      // Check if username is already taken (case-insensitive)
+      const usernameExists = usersDb.some(u => (u.username || '').toLowerCase() === normalizedUsername);
       if (usernameExists) {
         setError("Ushbu foydalanuvchi nomi band. Boshqa nom tanlang.");
         return;
       }
 
-      // Check if email is already taken
+      // Check if email is already taken (case-insensitive)
       const emailExists = usersDb.some(u => u.email && u.email.toLowerCase() === email.trim().toLowerCase());
       if (emailExists) {
         setError("Ushbu e-pochta manzili allaqachon ro'yxatdan o'tgan.");
@@ -87,7 +129,7 @@ export default function Auth({ onLoginSuccess }: AuthProps) {
         fullName: fullName.trim(),
         avatar: selectedAvatar,
         createdAt: new Date().toISOString(),
-        passwordHash: password, // For mock client-side auth, we store password
+        passwordHash: trimmedPassword,
         role: isUserAdmin ? 'admin' : 'user',
       };
 
@@ -102,11 +144,13 @@ export default function Auth({ onLoginSuccess }: AuthProps) {
       }, 1000);
 
     } else {
-      // Login flow - allows login via username or email
-      const user = usersDb.find(u => 
-        (u.username === normalizedUsername || (u.email && u.email.toLowerCase() === normalizedUsername)) && 
-        u.passwordHash === password
-      );
+      // Login flow - allows login via username or email, case-insensitive
+      const user = usersDb.find(u => {
+        const uUsername = (u.username || '').toLowerCase();
+        const uEmail = (u.email || '').toLowerCase();
+        const uPassword = (u.passwordHash || '').trim();
+        return (uUsername === normalizedUsername || uEmail === normalizedUsername) && uPassword === trimmedPassword;
+      });
       
       if (!user) {
         setError("Foydalanuvchi nomi, e-pochta yoki parol noto'g'ri.");
@@ -227,10 +271,27 @@ export default function Auth({ onLoginSuccess }: AuthProps) {
               </div>
 
               {/* Avatar Selector */}
-              <div className="space-y-2">
+              <div className="space-y-3">
                 <label className="text-xs font-bold text-slate-400 dark:text-slate-500 uppercase tracking-wider block">
                   Profil rasmi (Avatar)
                 </label>
+                
+                {/* Visual Preview */}
+                <div className="flex items-center gap-4 bg-slate-50 dark:bg-slate-950 p-3.5 rounded-2xl border border-slate-100 dark:border-slate-800">
+                  <div className="w-14 h-14 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-full flex items-center justify-center overflow-hidden shrink-0 shadow-xs">
+                    {(selectedAvatar.startsWith('http') || selectedAvatar.startsWith('data:image')) ? (
+                      <img src={selectedAvatar} alt="Rasm" className="w-full h-full object-cover" referrerPolicy="no-referrer" />
+                    ) : (
+                      <span className="text-3xl">{selectedAvatar || '👤'}</span>
+                    )}
+                  </div>
+                  <div className="text-xs text-slate-400 dark:text-slate-500 leading-normal">
+                    <p className="font-bold text-slate-700 dark:text-slate-300">Avatar tanlandi</p>
+                    <p>Quyidagi tayyor timsollardan birini bosing, o'z rasmingizni yuklang yoki havolasini qo'ying.</p>
+                  </div>
+                </div>
+
+                {/* Grid of presets */}
                 <div className="grid grid-cols-6 gap-2 bg-slate-50 dark:bg-slate-950 border border-slate-100 dark:border-slate-800 p-3 rounded-2xl max-h-24 overflow-y-auto">
                   {AVATAR_PRESETS.map((av) => (
                     <button
@@ -246,6 +307,43 @@ export default function Auth({ onLoginSuccess }: AuthProps) {
                       {av}
                     </button>
                   ))}
+                </div>
+
+                {/* File Upload & URL inputs */}
+                <div className="space-y-2">
+                  <div className="flex gap-2">
+                    <label className="flex-1 flex flex-col items-center justify-center border border-dashed border-slate-200 dark:border-slate-800 rounded-2xl p-2.5 bg-slate-50/50 dark:bg-slate-950/50 hover:bg-slate-100 dark:hover:bg-slate-900 transition-all cursor-pointer text-xs font-semibold text-slate-500 hover:text-indigo-600">
+                      <span>Fayldan rasm yuklash</span>
+                      <input 
+                        type="file" 
+                        accept="image/*" 
+                        onChange={(e) => {
+                          const file = e.target.files?.[0];
+                          if (file) {
+                            const reader = new FileReader();
+                            reader.onloadend = () => {
+                              if (typeof reader.result === 'string') {
+                                setSelectedAvatar(reader.result);
+                              }
+                            };
+                            reader.readAsDataURL(file);
+                          }
+                        }}
+                        className="hidden" 
+                      />
+                    </label>
+                  </div>
+                  <input
+                    type="text"
+                    value={selectedAvatar.startsWith('data:') ? '' : selectedAvatar}
+                    onChange={(e) => {
+                      if (e.target.value.trim()) {
+                        setSelectedAvatar(e.target.value.trim());
+                      }
+                    }}
+                    placeholder="Rasm havolasi (URL): https://example.com/rasm.jpg"
+                    className="w-full rounded-2xl border border-slate-200 dark:border-slate-800 bg-slate-50/50 dark:bg-slate-950/50 px-4 py-2.5 text-slate-850 dark:text-slate-100 placeholder-slate-400 dark:placeholder-slate-500 outline-none transition-all focus:border-indigo-500 focus:bg-white dark:focus:bg-slate-900 text-xs font-medium"
+                  />
                 </div>
               </div>
             </>

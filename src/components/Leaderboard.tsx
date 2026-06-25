@@ -196,7 +196,13 @@ export default function Leaderboard({ currentUser }: LeaderboardProps) {
                 </div>
 
                 <div className="mt-4 flex flex-col items-center">
-                  <span className="text-4.5xl md:text-5xl select-none filter drop-shadow-md">{rank.user.avatar}</span>
+                  <div className="w-16 h-16 rounded-full bg-slate-50 dark:bg-slate-800 flex items-center justify-center overflow-hidden shrink-0 border border-slate-200 dark:border-slate-700 select-none filter drop-shadow-md">
+                    {(rank.user.avatar && (rank.user.avatar.startsWith('http') || rank.user.avatar.startsWith('data:image'))) ? (
+                      <img src={rank.user.avatar} alt="Avatar" className="w-full h-full object-cover" referrerPolicy="no-referrer" />
+                    ) : (
+                      <span className="text-4xl">{rank.user.avatar || '👤'}</span>
+                    )}
+                  </div>
                   <h4 className="mt-3 text-xs md:text-sm font-extrabold text-slate-800 dark:text-slate-200 tracking-tight max-w-[80px] md:max-w-[120px] truncate leading-tight">
                     {rank.user.fullName}
                   </h4>
@@ -274,7 +280,13 @@ export default function Leaderboard({ currentUser }: LeaderboardProps) {
                   </div>
 
                   {/* Avatar & Name */}
-                  <span className="text-3xl select-none">{item.user.avatar}</span>
+                  <div className="w-10 h-10 rounded-full bg-slate-50 dark:bg-slate-850 flex items-center justify-center overflow-hidden shrink-0 border border-slate-100 dark:border-slate-800 select-none">
+                    {(item.user.avatar && (item.user.avatar.startsWith('http') || item.user.avatar.startsWith('data:image'))) ? (
+                      <img src={item.user.avatar} alt="Avatar" className="w-full h-full object-cover" referrerPolicy="no-referrer" />
+                    ) : (
+                      <span className="text-2xl">{item.user.avatar || '👤'}</span>
+                    )}
+                  </div>
                   <div className="leading-tight">
                     <h4 className="text-sm font-bold text-slate-800 dark:text-slate-200 flex items-center gap-1.5">
                       {item.user.fullName}
@@ -325,7 +337,13 @@ export default function Leaderboard({ currentUser }: LeaderboardProps) {
           <div className="absolute right-0 top-0 -mr-16 -mt-16 h-36 w-36 rounded-full bg-indigo-500/10 blur-2xl pointer-events-none"></div>
           <div className="relative z-10 flex flex-col md:flex-row items-center justify-between gap-4">
             <div className="flex items-center gap-3.5 text-center md:text-left flex-col md:flex-row">
-              <span className="text-4xl bg-white/10 p-2.5 rounded-full border border-white/10">{currentUser.avatar}</span>
+              <div className="w-14 h-14 bg-white/10 rounded-full border border-white/10 flex items-center justify-center overflow-hidden shrink-0 select-none">
+                {(currentUser.avatar && (currentUser.avatar.startsWith('http') || currentUser.avatar.startsWith('data:image'))) ? (
+                  <img src={currentUser.avatar} alt="Avatar" className="w-full h-full object-cover" referrerPolicy="no-referrer" />
+                ) : (
+                  <span className="text-3xl">{currentUser.avatar || '👤'}</span>
+                )}
+              </div>
               <div>
                 <span className="text-xs text-indigo-300 font-bold uppercase tracking-wider">Sizning joriy holatingiz</span>
                 <h4 className="text-xl font-bold leading-tight">{currentUser.fullName}</h4>
