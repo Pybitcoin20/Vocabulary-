@@ -3,7 +3,7 @@ import { User, Word, TestHistory, StudyStats } from '../types';
 import { motion, AnimatePresence } from 'motion/react';
 import { 
   User as UserIcon, Lock, Shield, Edit3, Check, Save, 
-  Calendar, Award, Flame, BookOpen, CheckCircle2, TrendingUp, Sparkles, AlertCircle
+  Calendar, Award, Flame, BookOpen, CheckCircle2, TrendingUp, Sparkles, AlertCircle, Mail
 } from 'lucide-react';
 
 interface UserProfileProps {
@@ -21,6 +21,7 @@ const AVATAR_PRESETS = [
 export default function UserProfile({ user, onUpdateUser, words, history, stats }: UserProfileProps) {
   const [isEditing, setIsEditing] = useState(false);
   const [fullName, setFullName] = useState(user.fullName);
+  const [email, setEmail] = useState(user.email || '');
   const [selectedAvatar, setSelectedAvatar] = useState(user.avatar);
   
   // Password change states
@@ -44,9 +45,15 @@ export default function UserProfile({ user, onUpdateUser, words, history, stats 
       return;
     }
 
+    if (email.trim() && !email.trim().includes('@')) {
+      setError("Iltimos, to'g'ri e-pochta manzilini kiriting.");
+      return;
+    }
+
     const updatedUser: User = {
       ...user,
       fullName: fullName.trim(),
+      email: email.trim().toLowerCase(),
       avatar: selectedAvatar
     };
 
@@ -157,9 +164,16 @@ export default function UserProfile({ user, onUpdateUser, words, history, stats 
                 {user.fullName}
               </h3>
               
-              <span className="mt-1 px-3 py-1 bg-indigo-50/70 dark:bg-indigo-950/40 border border-indigo-100/30 dark:border-indigo-900/20 text-indigo-700 dark:text-indigo-400 text-xs font-semibold rounded-full">
-                @{user.username}
-              </span>
+              <div className="mt-1 flex flex-col items-center gap-1">
+                <span className="px-3 py-1 bg-indigo-50/70 dark:bg-indigo-950/40 border border-indigo-100/30 dark:border-indigo-900/20 text-indigo-700 dark:text-indigo-400 text-xs font-semibold rounded-full">
+                  @{user.username}
+                </span>
+                {user.email && (
+                  <span className="text-xs text-slate-500 dark:text-slate-400 font-medium">
+                    {user.email}
+                  </span>
+                )}
+              </div>
 
               <p className="mt-4 text-xs text-slate-400 dark:text-slate-500 flex items-center gap-1 font-medium">
                 <Calendar className="h-3.5 w-3.5" />
@@ -173,6 +187,7 @@ export default function UserProfile({ user, onUpdateUser, words, history, stats 
                   onClick={() => {
                     setIsEditing(true);
                     setFullName(user.fullName);
+                    setEmail(user.email || '');
                     setSelectedAvatar(user.avatar);
                     setIsChangingPassword(false);
                   }}
@@ -229,6 +244,22 @@ export default function UserProfile({ user, onUpdateUser, words, history, stats 
                         placeholder="Masalan, Ali Valiyev"
                         className="w-full rounded-2xl border border-slate-200 dark:border-slate-800 bg-slate-50/50 dark:bg-slate-950 pl-11 pr-4 py-2.5 text-slate-800 dark:text-slate-100 placeholder-slate-400 dark:placeholder-slate-500 outline-none transition-all focus:border-indigo-500 focus:bg-white dark:focus:bg-slate-900 focus:ring-4 focus:ring-indigo-100/30 dark:focus:ring-indigo-900/10 text-xs font-medium"
                         required
+                      />
+                    </div>
+                  </div>
+
+                  <div className="space-y-1.5">
+                    <label className="text-[10px] font-bold text-slate-400 dark:text-slate-500 uppercase tracking-wider block">
+                      E-pochta manzili (Email)
+                    </label>
+                    <div className="relative">
+                      <Mail className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-400 dark:text-slate-500 h-4 w-4" />
+                      <input
+                        type="email"
+                        value={email}
+                        onChange={(e) => setEmail(e.target.value)}
+                        placeholder="example@mail.com"
+                        className="w-full rounded-2xl border border-slate-200 dark:border-slate-800 bg-slate-50/50 dark:bg-slate-950 pl-11 pr-4 py-2.5 text-slate-800 dark:text-slate-100 placeholder-slate-400 dark:placeholder-slate-500 outline-none transition-all focus:border-indigo-500 focus:bg-white dark:focus:bg-slate-900 focus:ring-4 focus:ring-indigo-100/30 dark:focus:ring-indigo-900/10 text-xs font-medium"
                       />
                     </div>
                   </div>

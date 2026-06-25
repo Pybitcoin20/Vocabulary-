@@ -71,6 +71,62 @@ export default function App() {
 
   // 1. Initial Mount: Check if user is already logged in
   useEffect(() => {
+    // Seed default users if users database doesn't exist or is empty
+    const storedUsers = localStorage.getItem('yodlash_users_db');
+    if (!storedUsers) {
+      const defaultUsers: User[] = [
+        {
+          id: 'u_demo',
+          username: 'demo',
+          email: 'demo@example.com',
+          fullName: 'Demo Foydalanuvchi',
+          avatar: '🧠',
+          createdAt: new Date().toISOString(),
+          passwordHash: 'demo123'
+        },
+        {
+          id: 'u_sardor',
+          username: 'sardor_bek',
+          email: 'sardor@example.com',
+          fullName: 'Sardor Rustamov',
+          avatar: '🦁',
+          createdAt: new Date().toISOString(),
+          passwordHash: 'sardor123'
+        },
+        {
+          id: 'u_noila',
+          username: 'noila_99',
+          email: 'noila@example.com',
+          fullName: 'Noila Karimova',
+          avatar: '🦉',
+          createdAt: new Date().toISOString(),
+          passwordHash: 'noila123'
+        }
+      ];
+      localStorage.setItem('yodlash_users_db', JSON.stringify(defaultUsers));
+
+      // u_sardor mock data
+      localStorage.setItem('yodlash_words_u_sardor', JSON.stringify([
+        { id: 'ws1', original: 'Understand', translation: 'Tushunmoq', category: 'Fe\'llar', difficulty: 'easy', correctStreak: 3, status: 'mastered', createdAt: new Date().toISOString() },
+        { id: 'ws2', original: 'Create', translation: 'Yaratmoq', category: 'Fe\'llar', difficulty: 'easy', correctStreak: 3, status: 'mastered', createdAt: new Date().toISOString() },
+        { id: 'ws3', original: 'Challenge', translation: 'Qiyinchilik', category: 'Umumiy', difficulty: 'medium', correctStreak: 1, status: 'learning', createdAt: new Date().toISOString() }
+      ]));
+      localStorage.setItem('yodlash_history_u_sardor', JSON.stringify([
+        { id: 'hs1', date: new Date().toISOString(), totalQuestions: 10, score: 90, mode: 'multiple_choice', category: 'Barchasi' }
+      ]));
+      localStorage.setItem('yodlash_streak_u_sardor', '5');
+
+      // u_noila mock data
+      localStorage.setItem('yodlash_words_u_noila', JSON.stringify([
+        { id: 'wn1', original: 'Beautiful', translation: 'Go\'zal', category: 'Sifatlar', difficulty: 'easy', correctStreak: 3, status: 'mastered', createdAt: new Date().toISOString() },
+        { id: 'wn2', original: 'Language', translation: 'Til', category: 'Umumiy', difficulty: 'easy', correctStreak: 3, status: 'mastered', createdAt: new Date().toISOString() }
+      ]));
+      localStorage.setItem('yodlash_history_u_noila', JSON.stringify([
+        { id: 'hn1', date: new Date().toISOString(), totalQuestions: 5, score: 100, mode: 'spelling', category: 'Barchasi' }
+      ]));
+      localStorage.setItem('yodlash_streak_u_noila', '3');
+    }
+
     const storedUser = localStorage.getItem('yodlash_current_user');
     if (storedUser) {
       try {

@@ -56,6 +56,7 @@ export interface StudyStats {
 export interface User {
   id: string;
   username: string;
+  email?: string;
   fullName: string;
   avatar: string; // Avatar seed or index
   createdAt: string;

@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { User as UserType } from '../types';
 import { motion, AnimatePresence } from 'motion/react';
-import { User, Lock, LogIn, UserPlus, Eye, EyeOff, Sparkles, AlertCircle, Check } from 'lucide-react';
+import { User, Lock, LogIn, UserPlus, Eye, EyeOff, Sparkles, AlertCircle, Check, Mail } from 'lucide-react';
 
 interface AuthProps {
   onLoginSuccess: (user: UserType) => void;
@@ -15,6 +15,7 @@ export default function Auth({ onLoginSuccess }: AuthProps) {
   const [mode, setMode] = useState<'login' | 'register'>('login');
   const [username, setUsername] = useState('');
   const [fullName, setFullName] = useState('');
+  const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
   const [selectedAvatar, setSelectedAvatar] = useState(AVATAR_PRESETS[0]);
@@ -50,6 +51,10 @@ export default function Auth({ onLoginSuccess }: AuthProps) {
         setError("Iltimos, ismingizni kiriting.");
         return;
       }
+      if (!email.trim() || !email.includes('@')) {
+        setError("Iltimos, to'g'ri e-pochta manzilini kiriting.");
+        return;
+      }
       if (password.length < 5) {
         setError("Parol kamida 5 ta belgidan iborat bo'lishi kerak.");
         return;
@@ -60,9 +65,16 @@ export default function Auth({ onLoginSuccess }: AuthProps) {
       }
 
       // Check if username is already taken
-      const userExists = usersDb.some(u => u.username === normalizedUsername);
-      if (userExists) {
+      const usernameExists = usersDb.some(u => u.username === normalizedUsername);
+      if (usernameExists) {
         setError("Ushbu foydalanuvchi nomi band. Boshqa nom tanlang.");
+        return;
+      }
+
+      // Check if email is already taken
+      const emailExists = usersDb.some(u => u.email && u.email.toLowerCase() === email.trim().toLowerCase());
+      if (emailExists) {
+        setError("Ushbu e-pochta manzili allaqachon ro'yxatdan o'tgan.");
         return;
       }
 
@@ -70,6 +82,7 @@ export default function Auth({ onLoginSuccess }: AuthProps) {
       const newUser: UserType = {
         id: `u_${Date.now()}`,
         username: normalizedUsername,
+        email: email.trim().toLowerCase(),
         fullName: fullName.trim(),
         avatar: selectedAvatar,
         createdAt: new Date().toISOString(),
@@ -87,11 +100,14 @@ export default function Auth({ onLoginSuccess }: AuthProps) {
       }, 1000);
 
     } else {
-      // Login flow
-      const user = usersDb.find(u => u.username === normalizedUsername && u.passwordHash === password);
+      // Login flow - allows login via username or email
+      const user = usersDb.find(u => 
+        (u.username === normalizedUsername || (u.email && u.email.toLowerCase() === normalizedUsername)) && 
+        u.passwordHash === password
+      );
       
       if (!user) {
-        setError("Foydalanuvchi nomi yoki parol noto'g'ri.");
+        setError("Foydalanuvchi nomi, e-pochta yoki parol noto'g'ri.");
         return;
       }
 
@@ -163,7 +179,7 @@ export default function Auth({ onLoginSuccess }: AuthProps) {
 
         {/* Form */}
         <form onSubmit={handleAuthSubmit} className="space-y-4" id="auth-form">
-          {/* REGISTER EXTRA FIELDS: Full Name and Avatar Preset Selector */}
+          {/* REGISTER EXTRA FIELDS: Full Name, Email, and Avatar Preset Selector */}
           {mode === 'register' && (
             <>
               <div className="space-y-1.5">
@@ -179,6 +195,25 @@ export default function Auth({ onLoginSuccess }: AuthProps) {
                     placeholder="Masalan, Ali Valiyev"
                     className="w-full rounded-2xl border border-slate-200 dark:border-slate-800 bg-slate-50/50 dark:bg-slate-950/50 pl-11 pr-4 py-3 text-slate-800 dark:text-slate-100 placeholder-slate-400 dark:placeholder-slate-500 outline-none transition-all focus:border-indigo-500 focus:bg-white dark:focus:bg-slate-900 focus:ring-4 focus:ring-indigo-100/50 dark:focus:ring-indigo-900/20 text-sm font-medium"
                     id="register-fullname"
+                    required
+                  />
+                </div>
+              </div>
+
+              {/* Email field */}
+              <div className="space-y-1.5">
+                <label className="text-xs font-bold text-slate-400 dark:text-slate-500 uppercase tracking-wider block">
+                  E-pochta manzili (Email)
+                </label>
+                <div className="relative">
+                  <Mail className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-400 dark:text-slate-500 h-4.5 w-4.5" />
+                  <input
+                    type="email"
+                    value={email}
+                    onChange={(e) => setEmail(e.target.value)}
+                    placeholder="example@mail.com"
+                    className="w-full rounded-2xl border border-slate-200 dark:border-slate-800 bg-slate-50/50 dark:bg-slate-950/50 pl-11 pr-4 py-3 text-slate-800 dark:text-slate-100 placeholder-slate-400 dark:placeholder-slate-500 outline-none transition-all focus:border-indigo-500 focus:bg-white dark:focus:bg-slate-900 focus:ring-4 focus:ring-indigo-100/50 dark:focus:ring-indigo-900/20 text-sm font-medium"
+                    id="register-email"
                     required
                   />
                 </div>
@@ -209,10 +244,10 @@ export default function Auth({ onLoginSuccess }: AuthProps) {
             </>
           )}
 
-          {/* Username */}
+          {/* Username / Email */}
           <div className="space-y-1.5">
             <label className="text-xs font-bold text-slate-400 dark:text-slate-500 uppercase tracking-wider block">
-              Foydalanuvchi nomi (Username)
+              {mode === 'login' ? "Foydalanuvchi nomi yoki E-pochta" : "Foydalanuvchi nomi (Username)"}
             </label>
             <div className="relative">
               <span className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-400 dark:text-slate-500 font-bold text-sm">@</span>
@@ -220,7 +255,7 @@ export default function Auth({ onLoginSuccess }: AuthProps) {
                 type="text"
                 value={username}
                 onChange={(e) => setUsername(e.target.value)}
-                placeholder="foydalanuvchi_nomi"
+                placeholder={mode === 'login' ? "username yoki email@mail.com" : "foydalanuvchi_nomi"}
                 className="w-full rounded-2xl border border-slate-200 dark:border-slate-800 bg-slate-50/50 dark:bg-slate-950/50 pl-11 pr-4 py-3 text-slate-800 dark:text-slate-100 placeholder-slate-400 dark:placeholder-slate-500 outline-none transition-all focus:border-indigo-500 focus:bg-white dark:focus:bg-slate-900 focus:ring-4 focus:ring-indigo-100/50 dark:focus:ring-indigo-900/20 text-sm font-medium"
                 id="auth-username"
                 required
@@ -304,6 +339,7 @@ export default function Auth({ onLoginSuccess }: AuthProps) {
                 setMode(mode === 'login' ? 'register' : 'login');
                 setError('');
                 setSuccess('');
+                setEmail('');
               }}
               className="text-indigo-600 dark:text-indigo-400 hover:text-indigo-800 dark:hover:text-indigo-300 font-bold underline transition-all cursor-pointer bg-transparent border-none"
               id="auth-toggle-mode"
