@@ -62,5 +62,6 @@ export interface User {
   createdAt: string;
   passwordHash: string; // Standard password verification representation
   role?: 'admin' | 'user';
+  isBlocked?: boolean;
 }
 

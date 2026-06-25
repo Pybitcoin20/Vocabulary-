@@ -113,6 +113,11 @@ export default function Auth({ onLoginSuccess }: AuthProps) {
         return;
       }
 
+      if (user.isBlocked) {
+        setError("Ushbu hisob admin tomonidan bloklangan!");
+        return;
+      }
+
       // Successful login
       setSuccess("Xush kelibsiz!");
       setTimeout(() => {
