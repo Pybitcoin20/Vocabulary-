@@ -480,10 +480,10 @@ export default function App() {
               </button>
 
               {/* User Profile display & Logout button */}
-              <div className="flex items-center gap-2.5 border-l border-slate-100 dark:border-slate-800 pl-4">
+              <div className="flex items-center gap-1.5 sm:gap-2.5 sm:border-l border-slate-100 dark:border-slate-800 sm:pl-4">
                 <div 
                   onClick={() => setActiveTab('profile')}
-                  className={`flex items-center gap-2 cursor-pointer p-1.5 rounded-xl hover:bg-slate-50 dark:hover:bg-slate-800 transition-all ${activeTab === 'profile' ? 'bg-indigo-50/50 dark:bg-indigo-950/30' : ''}`}
+                  className={`hidden sm:flex items-center gap-2 cursor-pointer p-1.5 rounded-xl hover:bg-slate-50 dark:hover:bg-slate-800 transition-all ${activeTab === 'profile' ? 'bg-indigo-50/50 dark:bg-indigo-950/30' : ''}`}
                   title="Shaxsiy profilga o'tish"
                 >
                   <span className="text-2xl" title={currentUser.fullName}>{currentUser.avatar}</span>

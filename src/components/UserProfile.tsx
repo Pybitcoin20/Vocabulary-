@@ -501,49 +501,90 @@ export default function UserProfile({ user, onUpdateUser, words, history, stats 
                 Hech qanday test topshirilmagan
               </div>
             ) : (
-              <div className="overflow-x-auto">
-                <table className="w-full text-left border-collapse">
-                  <thead>
-                    <tr className="border-b border-slate-100 dark:border-slate-800 text-[10px] text-slate-400 dark:text-slate-500 uppercase tracking-wider font-bold">
-                      <th className="py-3 px-4">Test Turi</th>
-                      <th className="py-3 px-4">Guruh (Kategoriya)</th>
-                      <th className="py-3 px-4">Sana</th>
-                      <th className="py-3 px-4">To'g'ri javoblar</th>
-                      <th className="py-3 px-4 text-right">Ball</th>
-                    </tr>
-                  </thead>
-                  <tbody className="text-xs divide-y divide-slate-50/50 dark:divide-slate-800/30">
-                    {history.slice().reverse().map((h) => (
-                      <tr key={h.id} className="hover:bg-slate-50/50 dark:hover:bg-slate-850/30 transition-colors">
-                        <td className="py-3.5 px-4 font-bold text-slate-700 dark:text-slate-300">
+              <div>
+                {/* Desktop and Tablet view (table) */}
+                <div className="hidden sm:block overflow-x-auto">
+                  <table className="w-full text-left border-collapse">
+                    <thead>
+                      <tr className="border-b border-slate-100 dark:border-slate-800 text-[10px] text-slate-400 dark:text-slate-500 uppercase tracking-wider font-bold">
+                        <th className="py-3 px-4">Test Turi</th>
+                        <th className="py-3 px-4">Guruh (Kategoriya)</th>
+                        <th className="py-3 px-4">Sana</th>
+                        <th className="py-3 px-4">To'g'ri javoblar</th>
+                        <th className="py-3 px-4 text-right">Ball</th>
+                      </tr>
+                    </thead>
+                    <tbody className="text-xs divide-y divide-slate-50/50 dark:divide-slate-800/30">
+                      {history.slice().reverse().map((h) => (
+                        <tr key={h.id} className="hover:bg-slate-50/50 dark:hover:bg-slate-850/30 transition-colors">
+                          <td className="py-3.5 px-4 font-bold text-slate-700 dark:text-slate-300">
+                            {h.mode === 'multiple_choice' ? "Variantli test" : h.mode === 'spelling' ? "Yozma test" : "Kartochkalar"}
+                          </td>
+                          <td className="py-3.5 px-4">
+                            <span className="inline-block px-2.5 py-0.5 rounded-lg bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-350 font-semibold">
+                              {h.category}
+                            </span>
+                          </td>
+                          <td className="py-3.5 px-4 text-slate-400 dark:text-slate-500 font-medium">
+                            {new Date(h.date).toLocaleDateString('uz-UZ')} {new Date(h.date).toLocaleTimeString('uz-UZ', { hour: '2-digit', minute: '2-digit' })}
+                          </td>
+                          <td className="py-3.5 px-4 text-slate-500 dark:text-slate-400 font-medium">
+                            {h.score / 10} / {h.totalQuestions} ta
+                          </td>
+                          <td className="py-3.5 px-4 text-right">
+                            <span className={`inline-flex items-center rounded-lg px-2.5 py-0.5 font-bold ${
+                              h.score >= 80 
+                                ? 'bg-emerald-50 dark:bg-emerald-950/20 text-emerald-700 dark:text-emerald-450 border border-emerald-100 dark:border-emerald-900/50' 
+                                : h.score >= 50 
+                                  ? 'bg-amber-50 dark:bg-amber-950/20 text-amber-700 dark:text-amber-450 border border-amber-100 dark:border-amber-900/50' 
+                                  : 'bg-rose-50 dark:bg-rose-950/20 text-rose-700 dark:text-rose-450 border border-rose-100 dark:border-rose-900/50'
+                            }`}>
+                              {h.score}%
+                            </span>
+                          </td>
+                        </tr>
+                      ))}
+                    </tbody>
+                  </table>
+                </div>
+
+                {/* Mobile view (cards) */}
+                <div className="block sm:hidden space-y-3" id="profile-history-cards">
+                  {history.slice().reverse().map((h) => (
+                    <div key={h.id} className="rounded-2xl p-4 border border-slate-100 dark:border-slate-800 bg-slate-50/40 dark:bg-slate-950/20 space-y-3 shadow-xs">
+                      <div className="flex items-center justify-between">
+                        <span className="font-extrabold text-xs text-slate-800 dark:text-slate-100">
                           {h.mode === 'multiple_choice' ? "Variantli test" : h.mode === 'spelling' ? "Yozma test" : "Kartochkalar"}
-                        </td>
-                        <td className="py-3.5 px-4">
-                          <span className="inline-block px-2.5 py-0.5 rounded-lg bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-350 font-semibold">
+                        </span>
+                        <span className={`inline-flex items-center rounded-lg px-2 py-0.5 text-[10px] font-black ${
+                          h.score >= 80 
+                            ? 'bg-emerald-50 dark:bg-emerald-950/20 text-emerald-700 dark:text-emerald-400 border border-emerald-100 dark:border-emerald-900/50' 
+                            : h.score >= 50 
+                              ? 'bg-amber-50 dark:bg-amber-950/20 text-amber-700 dark:text-amber-400 border border-amber-100 dark:border-amber-900/50' 
+                              : 'bg-rose-50 dark:bg-rose-950/20 text-rose-700 dark:text-rose-450 border border-rose-100 dark:border-rose-900/50'
+                        }`}>
+                          {h.score}%
+                        </span>
+                      </div>
+                      
+                      <div className="flex items-center justify-between text-xs">
+                        <div className="flex items-center gap-1.5">
+                          <span className="text-[10px] font-bold text-slate-400 dark:text-slate-500 uppercase tracking-wider">Guruh:</span>
+                          <span className="px-2 py-0.5 rounded-lg bg-slate-100 dark:bg-slate-800 text-[10px] font-semibold text-slate-600 dark:text-slate-350">
                             {h.category}
                           </span>
-                        </td>
-                        <td className="py-3.5 px-4 text-slate-400 dark:text-slate-500 font-medium">
-                          {new Date(h.date).toLocaleDateString('uz-UZ')} {new Date(h.date).toLocaleTimeString('uz-UZ', { hour: '2-digit', minute: '2-digit' })}
-                        </td>
-                        <td className="py-3.5 px-4 text-slate-500 dark:text-slate-400 font-medium">
-                          {h.score / 10} / {h.totalQuestions} ta
-                        </td>
-                        <td className="py-3.5 px-4 text-right">
-                          <span className={`inline-flex items-center rounded-lg px-2.5 py-0.5 font-bold ${
-                            h.score >= 80 
-                              ? 'bg-emerald-50 dark:bg-emerald-950/20 text-emerald-700 dark:text-emerald-450 border border-emerald-100 dark:border-emerald-900/50' 
-                              : h.score >= 50 
-                                ? 'bg-amber-50 dark:bg-amber-950/20 text-amber-700 dark:text-amber-450 border border-amber-100 dark:border-amber-900/50' 
-                                : 'bg-rose-50 dark:bg-rose-950/20 text-rose-700 dark:text-rose-450 border border-rose-100 dark:border-rose-900/50'
-                          }`}>
-                            {h.score}%
-                          </span>
-                        </td>
-                      </tr>
-                    ))}
-                  </tbody>
-                </table>
+                        </div>
+                        <div className="text-[10px] font-semibold text-slate-500 dark:text-slate-400">
+                          {h.score / 10} / {h.totalQuestions} ta javob
+                        </div>
+                      </div>
+
+                      <div className="text-[9px] text-slate-400 dark:text-slate-500 font-medium">
+                        {new Date(h.date).toLocaleDateString('uz-UZ')} {new Date(h.date).toLocaleTimeString('uz-UZ', { hour: '2-digit', minute: '2-digit' })}
+                      </div>
+                    </div>
+                  ))}
+                </div>
               </div>
             )}
           </div>

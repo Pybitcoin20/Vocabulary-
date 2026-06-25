@@ -45,18 +45,18 @@ export default function DashboardStats({ words, history, stats, onNavigate, onRe
   }
 
   return (
-    <div className="space-y-8" id="dashboard-container">
+    <div className="space-y-6 sm:space-y-8" id="dashboard-container">
       {/* Bento Grid Top Section: Welcome Banner and Streak Widget */}
-      <div className="grid grid-cols-1 lg:grid-cols-4 gap-6">
+      <div className="grid grid-cols-1 lg:grid-cols-4 gap-4 sm:gap-6">
         {/* Welcome Banner: Spans 3 columns on large screens */}
         <motion.div 
           initial={{ opacity: 0, y: 15 }}
           animate={{ opacity: 1, y: 0 }}
-          className="lg:col-span-3 relative overflow-hidden rounded-3xl bg-gradient-to-tr from-slate-900 via-indigo-950 to-purple-950 p-8 text-white shadow-xl border border-slate-800/40 flex flex-col justify-between min-h-[260px]"
+          className="lg:col-span-3 relative overflow-hidden rounded-3xl bg-gradient-to-tr from-slate-900 via-indigo-950 to-purple-950 p-6 sm:p-8 text-white shadow-xl border border-slate-800/40 flex flex-col justify-between min-h-[260px]"
           id="welcome-banner"
         >
           {/* Subtle abstract glows */}
-          <div className="absolute right-0 top-0 -mr-16 -mt-16 h-72 w-72 rounded-full bg-indigo-500/15 blur-3xl pointer-events-none"></div>
+          <div className="absolute right-0 top-0 -mr-16 -mt-16 h-72 w-72 rounded-full bg-indigo-50/15 blur-3xl pointer-events-none"></div>
           <div className="absolute left-1/3 bottom-0 -mb-20 h-56 w-56 rounded-full bg-purple-500/10 blur-3xl pointer-events-none"></div>
           
           <div className="relative z-10 max-w-2xl">
@@ -64,18 +64,18 @@ export default function DashboardStats({ words, history, stats, onNavigate, onRe
               <Sparkles className="h-3.5 w-3.5 text-indigo-400" />
               Intellektual Lug'at Tizimi
             </span>
-            <h2 className="mt-5 text-3xl font-serif italic sm:text-4.5xl tracking-tight text-white leading-tight" id="greeting-title">
+            <h2 className="mt-4 sm:mt-5 text-2.5xl font-serif italic sm:text-4.5xl tracking-tight text-white leading-tight" id="greeting-title">
               {greeting}
             </h2>
-            <p className="mt-3 text-slate-300 text-base font-normal max-w-xl">
+            <p className="mt-2.5 sm:mt-3 text-slate-300 text-sm sm:text-base font-normal max-w-xl">
               {motivation}
             </p>
           </div>
 
-          <div className="mt-8 relative z-10 flex flex-wrap gap-3.5">
+          <div className="mt-6 sm:mt-8 relative z-10 flex flex-col sm:flex-row gap-3">
             <button
               onClick={() => onNavigate('words')}
-              className="inline-flex items-center gap-2 rounded-2xl bg-white px-5.5 py-3 text-sm font-bold text-slate-900 shadow-md transition-all hover:bg-slate-50 hover:scale-[1.02] active:scale-[0.98] cursor-pointer"
+              className="w-full sm:w-auto inline-flex items-center justify-center gap-2 rounded-2xl bg-white px-5.5 py-3 text-sm font-bold text-slate-900 shadow-md transition-all hover:bg-slate-50 hover:scale-[1.02] active:scale-[0.98] cursor-pointer"
               id="banner-btn-add"
             >
               <BookOpen className="h-4 w-4 text-indigo-600" />
@@ -84,7 +84,7 @@ export default function DashboardStats({ words, history, stats, onNavigate, onRe
             <button
               onClick={() => onNavigate('test')}
               disabled={words.length === 0}
-              className="inline-flex items-center gap-2 rounded-2xl bg-white/10 hover:bg-white/15 border border-white/10 backdrop-blur-md px-5.5 py-3 text-sm font-bold text-white transition-all disabled:opacity-40 disabled:cursor-not-allowed hover:scale-[1.02] active:scale-[0.98] cursor-pointer"
+              className="w-full sm:w-auto inline-flex items-center justify-center gap-2 rounded-2xl bg-white/10 hover:bg-white/15 border border-white/10 backdrop-blur-md px-5.5 py-3 text-sm font-bold text-white transition-all disabled:opacity-40 disabled:cursor-not-allowed hover:scale-[1.02] active:scale-[0.98] cursor-pointer"
               id="banner-btn-test"
             >
               <Award className="h-4 w-4 text-yellow-400" />
@@ -92,7 +92,7 @@ export default function DashboardStats({ words, history, stats, onNavigate, onRe
             </button>
             <button
               onClick={() => onNavigate('leaderboard')}
-              className="inline-flex items-center gap-2 rounded-2xl bg-white/10 hover:bg-white/15 border border-white/10 backdrop-blur-md px-5.5 py-3 text-sm font-bold text-white transition-all hover:scale-[1.02] active:scale-[0.98] cursor-pointer"
+              className="w-full sm:w-auto inline-flex items-center justify-center gap-2 rounded-2xl bg-white/10 hover:bg-white/15 border border-white/10 backdrop-blur-md px-5.5 py-3 text-sm font-bold text-white transition-all hover:scale-[1.02] active:scale-[0.98] cursor-pointer"
               id="banner-btn-leaderboard"
             >
               <Trophy className="h-4 w-4 text-yellow-400" />
@@ -106,7 +106,7 @@ export default function DashboardStats({ words, history, stats, onNavigate, onRe
           initial={{ opacity: 0, y: 15 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.15 }}
-          className={`rounded-3xl border p-6 flex flex-col justify-between relative overflow-hidden transition-all duration-300 ${
+          className={`rounded-3xl border p-5 sm:p-6 flex flex-col justify-between relative overflow-hidden transition-all duration-300 ${
             stats.streakDays > 0 
               ? 'border-orange-200 dark:border-orange-950/50 bg-gradient-to-b from-orange-50/70 dark:from-orange-950/20 to-amber-50/35 dark:to-amber-950/10 shadow-sm' 
               : 'border-slate-100 dark:border-slate-800 bg-white dark:bg-slate-900 shadow-sm'
@@ -139,7 +139,7 @@ export default function DashboardStats({ words, history, stats, onNavigate, onRe
             <p className="text-xs text-slate-500 dark:text-slate-400 mt-2 leading-relaxed">
               {stats.streakDays > 0 
                 ? "Ajoyib! Shug'ullanish zanjirini uzib qo'ymang." 
-                : "Bugun lug'atingizga yangi so'zlar qo'shib, bilimingizni boyiting."}
+                : "Bugun lug'atingizga yeni so'zlar qo'shib, bilimingizni boyiting."}
             </p>
           </div>
 
@@ -155,22 +155,22 @@ export default function DashboardStats({ words, history, stats, onNavigate, onRe
       </div>
 
       {/* Main Stats Grid: 3 cards showing totals & achievements */}
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-6" id="stats-grid">
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-4 sm:gap-6" id="stats-grid">
         {/* Total Words Card */}
         <motion.div 
           initial={{ opacity: 0, y: 10 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.1 }}
-          className="rounded-3xl border border-slate-100 dark:border-slate-800 bg-white dark:bg-slate-900 p-6 shadow-sm flex items-center gap-5 hover:shadow-md transition-all duration-300"
+          className="rounded-3xl border border-slate-100 dark:border-slate-800 bg-white dark:bg-slate-900 p-5 sm:p-6 shadow-sm flex items-center gap-4 sm:gap-5 hover:shadow-md transition-all duration-300"
           id="stat-card-total"
         >
-          <div className="rounded-2xl bg-indigo-50 dark:bg-indigo-950/40 p-4 text-indigo-600 dark:text-indigo-400 shadow-sm">
-            <BookOpen className="h-6 w-6" />
+          <div className="rounded-2xl bg-indigo-50 dark:bg-indigo-950/40 p-3.5 sm:p-4 text-indigo-600 dark:text-indigo-400 shadow-sm">
+            <BookOpen className="h-5 sm:h-6 w-5 sm:w-6" />
           </div>
           <div>
-            <p className="text-xs font-bold text-slate-400 dark:text-slate-500 uppercase tracking-wider">Jami so'zlar</p>
-            <h3 className="text-3xl font-extrabold text-slate-800 dark:text-slate-100 mt-1 font-mono tracking-tight">{stats.totalWords}</h3>
-            <span className="text-xs text-slate-400 dark:text-slate-500 font-medium">Shaxsiy lug'at hajmi</span>
+            <p className="text-[10px] sm:text-xs font-bold text-slate-400 dark:text-slate-500 uppercase tracking-wider">Jami so'zlar</p>
+            <h3 className="text-2.5xl sm:text-3xl font-extrabold text-slate-800 dark:text-slate-100 mt-0.5 sm:mt-1 font-mono tracking-tight">{stats.totalWords}</h3>
+            <span className="text-[10px] sm:text-xs text-slate-400 dark:text-slate-500 font-medium">Shaxsiy lug'at hajmi</span>
           </div>
         </motion.div>
 
@@ -179,16 +179,16 @@ export default function DashboardStats({ words, history, stats, onNavigate, onRe
           initial={{ opacity: 0, y: 10 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.2 }}
-          className="rounded-3xl border border-slate-100 dark:border-slate-800 bg-white dark:bg-slate-900 p-6 shadow-sm flex items-center gap-5 hover:shadow-md transition-all duration-300"
+          className="rounded-3xl border border-slate-100 dark:border-slate-800 bg-white dark:bg-slate-900 p-5 sm:p-6 shadow-sm flex items-center gap-4 sm:gap-5 hover:shadow-md transition-all duration-300"
           id="stat-card-mastered"
         >
-          <div className="rounded-2xl bg-emerald-50 dark:bg-emerald-950/40 p-4 text-emerald-600 dark:text-emerald-400 shadow-sm">
-            <CheckCircle2 className="h-6 w-6" />
+          <div className="rounded-2xl bg-emerald-50 dark:bg-emerald-950/40 p-3.5 sm:p-4 text-emerald-600 dark:text-emerald-400 shadow-sm">
+            <CheckCircle2 className="h-5 sm:h-6 w-5 sm:w-6" />
           </div>
           <div>
-            <p className="text-xs font-bold text-slate-400 dark:text-slate-500 uppercase tracking-wider">Yodlangan</p>
-            <h3 className="text-3xl font-extrabold text-slate-800 dark:text-slate-100 mt-1 font-mono tracking-tight">{stats.masteredCount}</h3>
-            <span className="text-xs text-emerald-700 dark:text-emerald-400 bg-emerald-50 dark:bg-emerald-950/40 px-2 py-0.5 rounded-md font-bold">{masteredPercentage}% mukammal</span>
+            <p className="text-[10px] sm:text-xs font-bold text-slate-400 dark:text-slate-500 uppercase tracking-wider">Yodlangan</p>
+            <h3 className="text-2.5xl sm:text-3xl font-extrabold text-slate-800 dark:text-slate-100 mt-0.5 sm:mt-1 font-mono tracking-tight">{stats.masteredCount}</h3>
+            <span className="text-[10px] sm:text-xs text-emerald-700 dark:text-emerald-400 bg-emerald-50 dark:bg-emerald-950/40 px-2 py-0.5 rounded-md font-bold">{masteredPercentage}% mukammal</span>
           </div>
         </motion.div>
 
@@ -197,40 +197,42 @@ export default function DashboardStats({ words, history, stats, onNavigate, onRe
           initial={{ opacity: 0, y: 10 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.3 }}
-          className="rounded-3xl border border-slate-100 dark:border-slate-800 bg-white dark:bg-slate-900 p-6 shadow-sm flex items-center gap-5 hover:shadow-md transition-all duration-300"
+          className="rounded-3xl border border-slate-100 dark:border-slate-800 bg-white dark:bg-slate-900 p-5 sm:p-6 shadow-sm flex items-center gap-4 sm:gap-5 hover:shadow-md transition-all duration-300"
           id="stat-card-learning"
         >
-          <div className="rounded-2xl bg-amber-50 dark:bg-amber-950/40 p-4 text-amber-500 dark:text-amber-400 shadow-sm">
-            <TrendingUp className="h-6 w-6" />
+          <div className="rounded-2xl bg-amber-50 dark:bg-amber-950/40 p-3.5 sm:p-4 text-amber-500 dark:text-amber-440 shadow-sm">
+            <TrendingUp className="h-5 sm:h-6 w-5 sm:w-6" />
           </div>
           <div>
-            <p className="text-xs font-bold text-slate-400 dark:text-slate-500 uppercase tracking-wider">O'rganilmoqda</p>
-            <h3 className="text-3xl font-extrabold text-slate-800 dark:text-slate-100 mt-1 font-mono tracking-tight">{stats.learningCount}</h3>
-            <span className="text-xs text-slate-400 dark:text-slate-500 font-medium">Jarayon davom etmoqda</span>
+            <p className="text-[10px] sm:text-xs font-bold text-slate-400 dark:text-slate-500 uppercase tracking-wider">O'rganilmoqda</p>
+            <h3 className="text-2.5xl sm:text-3xl font-extrabold text-slate-800 dark:text-slate-100 mt-0.5 sm:mt-1 font-mono tracking-tight">{stats.learningCount}</h3>
+            <span className="text-[10px] sm:text-xs text-slate-400 dark:text-slate-500 font-medium">Jarayon davom etmoqda</span>
           </div>
         </motion.div>
       </div>
 
       {/* Progress & Breakdown Section */}
-      <div className="grid grid-cols-1 gap-8 lg:grid-cols-3" id="stats-details-section">
+      <div className="grid grid-cols-1 gap-6 sm:gap-8 lg:grid-cols-3" id="stats-details-section">
         {/* Visual Progress Dial */}
-        <div className="rounded-3xl border border-slate-100 dark:border-slate-800 bg-white dark:bg-slate-900 p-6 shadow-sm flex flex-col justify-between" id="progress-dial-card">
+        <div className="rounded-3xl border border-slate-100 dark:border-slate-800 bg-white dark:bg-slate-900 p-5 sm:p-6 shadow-sm flex flex-col justify-between" id="progress-dial-card">
           <div>
             <h4 className="text-lg font-bold text-slate-800 dark:text-slate-100 tracking-tight">Yodlash progressi</h4>
             <p className="text-xs text-slate-400 dark:text-slate-500 mt-1">Sizning umumiy muvaffaqiyat ko'rsatkichingiz</p>
           </div>
           
-          <div className="my-7 flex flex-col items-center justify-center">
+          <div className="my-5 sm:my-7 flex flex-col items-center justify-center">
             <div className="relative flex items-center justify-center">
               {/* SVG Ring */}
-              <svg className="h-40 w-40 transform -rotate-90">
+              <svg className="h-36 sm:h-40 w-36 sm:w-40 transform -rotate-90">
                 <circle
-                  cx="80"
-                  cy="80"
-                  r="68"
+                  cx="72"
+                  cy="72"
+                  r="60"
                   className="stroke-slate-50 dark:stroke-slate-800"
-                  strokeWidth="11"
+                  strokeWidth="10"
                   fill="transparent"
+                  {...({ cx: undefined, cy: undefined, r: undefined, strokeWidth: undefined } as any)} // Overrides for responsive sizes or standard sizing
+                  {...{ cx: 80, cy: 80, r: 68, strokeWidth: 11 }}
                 />
                 <motion.circle
                   cx="80"
@@ -247,11 +249,11 @@ export default function DashboardStats({ words, history, stats, onNavigate, onRe
                 />
               </svg>
               <div className="absolute flex flex-col items-center justify-center">
-                <span className="text-3.5xl font-black text-slate-800 dark:text-slate-100 font-mono tracking-tight">{masteredPercentage}%</span>
-                <span className="text-[10px] text-indigo-600 dark:text-indigo-400 font-bold uppercase tracking-wider mt-0.5">Yodlandi</span>
+                <span className="text-3xl sm:text-3.5xl font-black text-slate-800 dark:text-slate-100 font-mono tracking-tight">{masteredPercentage}%</span>
+                <span className="text-[9px] sm:text-[10px] text-indigo-600 dark:text-indigo-400 font-bold uppercase tracking-wider mt-0.5">Yodlandi</span>
               </div>
             </div>
-            <p className="mt-5 text-center text-xs text-slate-500 dark:text-slate-400 max-w-[220px] leading-relaxed">
+            <p className="mt-4 sm:mt-5 text-center text-xs text-slate-500 dark:text-slate-400 max-w-[220px] leading-relaxed">
               Jami <b className="text-slate-800 dark:text-slate-100 font-semibold">{stats.totalWords} ta</b> so'zdan <b className="text-emerald-600 dark:text-emerald-400 font-bold">{stats.masteredCount} tasi</b> to'liq o'zlashtirildi.
             </p>
           </div>
@@ -272,7 +274,7 @@ export default function DashboardStats({ words, history, stats, onNavigate, onRe
         </div>
 
         {/* Category Breakdown */}
-        <div className="rounded-3xl border border-slate-100 dark:border-slate-800 bg-white dark:bg-slate-900 p-6 shadow-sm flex flex-col justify-between animate-fade-in" id="category-breakdown-card">
+        <div className="rounded-3xl border border-slate-100 dark:border-slate-800 bg-white dark:bg-slate-900 p-5 sm:p-6 shadow-sm flex flex-col justify-between animate-fade-in" id="category-breakdown-card">
           <div>
             <h4 className="text-lg font-bold text-slate-800 dark:text-slate-100 tracking-tight">Guruhlar bo'yicha</h4>
             <p className="text-xs text-slate-400 dark:text-slate-500 mt-1 font-medium">Har bir soha bo'yicha o'zlashtirish darajasi</p>
@@ -314,7 +316,7 @@ export default function DashboardStats({ words, history, stats, onNavigate, onRe
         </div>
 
         {/* Recent Activity / History */}
-        <div className="rounded-3xl border border-slate-100 dark:border-slate-800 bg-white dark:bg-slate-900 p-6 shadow-sm flex flex-col justify-between" id="recent-activity-card">
+        <div className="rounded-3xl border border-slate-100 dark:border-slate-800 bg-white dark:bg-slate-900 p-5 sm:p-6 shadow-sm flex flex-col justify-between" id="recent-activity-card">
           <div>
             <div className="flex items-center justify-between">
               <h4 className="text-lg font-bold text-slate-800 dark:text-slate-100 tracking-tight">Testlar tarixi</h4>
@@ -356,7 +358,7 @@ export default function DashboardStats({ words, history, stats, onNavigate, onRe
                         ? 'bg-emerald-50 dark:bg-emerald-950/30 text-emerald-700 dark:text-emerald-400 border border-emerald-100 dark:border-emerald-900/40' 
                         : h.score >= 50 
                           ? 'bg-amber-50 dark:bg-amber-950/30 text-amber-700 dark:text-amber-400 border border-amber-100 dark:border-amber-900/40' 
-                          : 'bg-rose-50 dark:bg-rose-950/30 text-rose-700 dark:text-rose-400 border border-rose-100 dark:border-rose-900/40'
+                          : 'bg-rose-50 dark:bg-rose-950/30 text-rose-700 dark:text-rose-450 border border-rose-100 dark:border-rose-900/40'
                     }`}>
                       {h.score}%
                     </span>

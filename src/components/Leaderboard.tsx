@@ -150,7 +150,7 @@ export default function Leaderboard({ currentUser }: LeaderboardProps) {
 
       {/* Podium Display (Top 3 Users) */}
       {rankedUsers.length > 0 && (
-        <div className="grid grid-cols-3 gap-3 max-w-2xl mx-auto pt-8 pb-4 items-end" id="leaderboard-podium">
+        <div className="hidden sm:grid grid-cols-3 gap-3 max-w-2xl mx-auto pt-8 pb-4 items-end" id="leaderboard-podium">
           {podium.map((rank) => {
             const isMe = rank.user.id === currentUser.id;
             const sizeClasses = rank.place === 1 
@@ -254,7 +254,13 @@ export default function Leaderboard({ currentUser }: LeaderboardProps) {
                 className={`flex items-center justify-between rounded-2xl p-4 border transition-all ${
                   isMe 
                     ? 'border-indigo-200 dark:border-indigo-900 bg-indigo-50/20 dark:bg-indigo-950/20 shadow-xs' 
-                    : 'border-slate-100 dark:border-slate-800 bg-slate-50/50 dark:bg-slate-950/40 hover:bg-slate-50 dark:hover:bg-slate-950/80'
+                    : rankNum === 1
+                      ? 'border-yellow-200/50 dark:border-yellow-900/20 bg-yellow-50/10 dark:bg-yellow-950/5 hover:bg-yellow-50/20 dark:hover:bg-yellow-950/10'
+                      : rankNum === 2
+                        ? 'border-slate-200/50 dark:border-slate-700/30 bg-slate-50/20 dark:bg-slate-800/5 hover:bg-slate-50/40'
+                        : rankNum === 3
+                          ? 'border-amber-600/20 dark:border-amber-900/10 bg-amber-50/10 dark:bg-amber-950/5 hover:bg-amber-50/20'
+                          : 'border-slate-100 dark:border-slate-800 bg-slate-50/50 dark:bg-slate-950/40 hover:bg-slate-50 dark:hover:bg-slate-950/80'
                 }`}
                 id={`leaderboard-row-${rankNum}`}
               >

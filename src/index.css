@@ -6,6 +6,8 @@
   --font-serif: "Playfair Display", Georgia, Cambria, serif;
 }
 
+@variant dark (&:where(.dark, .dark *));
+
 /* 3D perspective utility for flashcards */
 .perspective-1000 {
   perspective: 1000px;

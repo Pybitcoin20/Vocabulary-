@@ -91,24 +91,26 @@ export default function WordList({ words, categories, onAddWordClick, onEditWord
         {/* Category & Status Filter Row */}
         <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-4 pt-1" id="filter-selectors">
           {/* Category badges selection */}
-          <div className="flex flex-wrap items-center gap-2">
-            <span className="text-xs font-bold text-slate-400 dark:text-slate-500 uppercase mr-1.5 inline-flex items-center gap-1">
+          <div className="flex flex-col gap-2 w-full lg:w-auto">
+            <span className="text-xs font-bold text-slate-400 dark:text-slate-500 uppercase inline-flex items-center gap-1">
               <Filter className="h-3.5 w-3.5 text-indigo-500" />
               Guruh:
             </span>
-            {['Barchasi', ...categories.map(c => c.name)].map((cat) => (
-              <button
-                key={cat}
-                onClick={() => setSelectedCategory(cat)}
-                className={`rounded-xl px-3.5 py-1.5 text-xs font-bold transition-all cursor-pointer ${
-                  selectedCategory === cat
-                    ? 'bg-indigo-50 dark:bg-indigo-950/40 text-indigo-700 dark:text-indigo-300 border border-indigo-200/60 dark:border-indigo-900 shadow-xs'
-                    : 'bg-slate-50 dark:bg-slate-800 hover:bg-slate-100 dark:hover:bg-slate-700 text-slate-600 dark:text-slate-300 border border-transparent'
-                }`}
-              >
-                {cat}
-              </button>
-            ))}
+            <div className="flex overflow-x-auto gap-2 pb-1.5 scrollbar-none -mx-5 px-5 sm:mx-0 sm:px-0 sm:flex-wrap sm:pb-0" id="category-scroller">
+              {['Barchasi', ...categories.map(c => c.name)].map((cat) => (
+                <button
+                  key={cat}
+                  onClick={() => setSelectedCategory(cat)}
+                  className={`rounded-xl px-3.5 py-1.5 text-xs font-bold transition-all cursor-pointer whitespace-nowrap shrink-0 ${
+                    selectedCategory === cat
+                      ? 'bg-indigo-50 dark:bg-indigo-950/40 text-indigo-700 dark:text-indigo-300 border border-indigo-200/60 dark:border-indigo-900 shadow-xs'
+                      : 'bg-slate-50 dark:bg-slate-800 hover:bg-slate-100 dark:hover:bg-slate-700 text-slate-600 dark:text-slate-300 border border-transparent'
+                  }`}
+                >
+                  {cat}
+                </button>
+              ))}
+            </div>
           </div>
 
           {/* Status Selection Buttons */}
