@@ -3,8 +3,10 @@ import { User, Word, TestHistory, StudyStats } from '../types';
 import { motion, AnimatePresence } from 'motion/react';
 import { 
   User as UserIcon, Lock, Shield, Edit3, Check, Save, 
-  Calendar, Award, Flame, BookOpen, CheckCircle2, TrendingUp, Sparkles, AlertCircle, Mail
+  Calendar, Award, Flame, BookOpen, CheckCircle2, TrendingUp, Sparkles, AlertCircle, Mail,
+  DownloadCloud, UploadCloud
 } from 'lucide-react';
+import { syncAllLocalDataToServer } from '../lib/syncClient';
 
 interface UserProfileProps {
   user: User;
@@ -445,6 +447,114 @@ export default function UserProfile({ user, onUpdateUser, words, history, stats 
               </motion.div>
             )}
           </AnimatePresence>
+
+          {/* BACKUP & RESTORE CARD */}
+          <motion.div
+            initial={{ opacity: 0, y: 15 }}
+            animate={{ opacity: 1, y: 0 }}
+            className="rounded-3xl border border-slate-100 dark:border-slate-800 bg-white dark:bg-slate-900 p-6 shadow-sm space-y-4"
+            id="profile-backup-restore-card"
+          >
+            <div className="flex items-center gap-3">
+              <div className="rounded-2xl bg-indigo-50 dark:bg-indigo-950/40 p-2.5 text-indigo-600 dark:text-indigo-400">
+                <DownloadCloud className="h-5 w-5" />
+              </div>
+              <div>
+                <h4 className="text-sm font-bold text-slate-800 dark:text-slate-100 leading-tight animate-pulse-once">
+                  Zaxira & Qurilmaga O'tkazish
+                </h4>
+                <p className="text-[10px] text-slate-400 dark:text-slate-500 font-medium">
+                  Lug'atni boshqa telefonga o'tkazish fayli
+                </p>
+              </div>
+            </div>
+
+            <p className="text-xs text-slate-500 dark:text-slate-400 leading-relaxed">
+              Ushbu qurilmadagi barcha so'zlar, guruhlar va testlar tarixini `.json` fayl qilib yuklab oling va yangi telefonda qayta tiklang.
+            </p>
+
+            <div className="flex flex-col gap-2 pt-1">
+              {/* Export Button */}
+              <button
+                onClick={() => {
+                  const userId = user.id;
+                  const backupData = {
+                    words: JSON.parse(localStorage.getItem(`yodlash_words_${userId}`) || '[]'),
+                    categories: JSON.parse(localStorage.getItem(`yodlash_categories_${userId}`) || '[]'),
+                    history: JSON.parse(localStorage.getItem(`yodlash_history_${userId}`) || '[]'),
+                    streak: parseInt(localStorage.getItem(`yodlash_streak_${userId}`) || '0', 10),
+                    lastStudyDate: localStorage.getItem(`yodlash_last_study_${userId}`) || undefined
+                  };
+                  
+                  const dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(backupData, null, 2));
+                  const downloadAnchor = document.createElement('a');
+                  downloadAnchor.setAttribute("href", dataStr);
+                  downloadAnchor.setAttribute("download", `Yodlash_Zaxira_${user.username}.json`);
+                  document.body.appendChild(downloadAnchor);
+                  downloadAnchor.click();
+                  downloadAnchor.remove();
+                }}
+                className="w-full inline-flex justify-center items-center gap-2 rounded-2xl bg-slate-50 dark:bg-slate-850 hover:bg-slate-100 dark:hover:bg-slate-800 text-indigo-600 dark:text-indigo-400 py-3 text-xs font-bold transition-all cursor-pointer border border-indigo-500/10 active:scale-95 shadow-2xs"
+              >
+                <DownloadCloud className="h-4 w-4" />
+                Zaxira faylini yuklash (Eksport)
+              </button>
+
+              {/* Import Button */}
+              <label
+                className="w-full inline-flex justify-center items-center gap-2 rounded-2xl bg-indigo-600 hover:bg-indigo-700 text-white py-3 text-xs font-bold transition-all cursor-pointer active:scale-95 shadow-md shadow-indigo-150 dark:shadow-none text-center"
+              >
+                <UploadCloud className="h-4 w-4" />
+                <span>Zaxirani yuklash (Import)</span>
+                <input
+                  type="file"
+                  accept=".json"
+                  onChange={(e) => {
+                    const file = e.target.files?.[0];
+                    if (!file) return;
+
+                    const reader = new FileReader();
+                    reader.onload = async (event) => {
+                      try {
+                        const parsed = JSON.parse(event.target?.result as string);
+                        if (parsed && (Array.isArray(parsed.words) || Array.isArray(parsed.categories))) {
+                          const userId = user.id;
+                          
+                          if (Array.isArray(parsed.words)) {
+                            localStorage.setItem(`yodlash_words_${userId}`, JSON.stringify(parsed.words));
+                          }
+                          if (Array.isArray(parsed.categories)) {
+                            localStorage.setItem(`yodlash_categories_${userId}`, JSON.stringify(parsed.categories));
+                          }
+                          if (Array.isArray(parsed.history)) {
+                            localStorage.setItem(`yodlash_history_${userId}`, JSON.stringify(parsed.history));
+                          }
+                          if (parsed.streak !== undefined) {
+                            localStorage.setItem(`yodlash_streak_${userId}`, parsed.streak.toString());
+                          }
+                          if (parsed.lastStudyDate) {
+                            localStorage.setItem(`yodlash_last_study_${userId}`, parsed.lastStudyDate);
+                          }
+
+                          // Upload to cloud sync server immediately
+                          await syncAllLocalDataToServer(userId);
+
+                          alert("Muvaffaqiyatli tiklandi! Barcha ma'lumotlar tiklandi va yangilash uchun sahifa qayta yuklanadi.");
+                          window.location.reload();
+                        } else {
+                          alert("Xatolik: Ushbu fayl yaroqli lug'at zaxira nusxasi emas.");
+                        }
+                      } catch (err) {
+                        alert("Faylni o'qishda xatolik yuz berdi. To'g'ri JSON fayl tanlang.");
+                      }
+                    };
+                    reader.readAsText(file);
+                  }}
+                  className="hidden"
+                />
+              </label>
+            </div>
+          </motion.div>
 
         </div>
 

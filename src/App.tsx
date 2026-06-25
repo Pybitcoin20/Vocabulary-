@@ -12,6 +12,7 @@ import ConfirmModal from './components/ConfirmModal';
 import UsersList from './components/UsersList';
 import { motion, AnimatePresence } from 'motion/react';
 import { BookOpen, Award, Layers, Plus, Activity, BookMarked, Settings, Sparkles, LogOut, Trash2, User as UserIcon, Users, Trophy, Sun, Moon, ArrowLeft } from 'lucide-react';
+import { fetchUserDataFromServer, syncAllLocalDataToServer } from './lib/syncClient';
 
 export default function App() {
   // Navigation State
@@ -142,7 +143,7 @@ export default function App() {
     }
   }, []);
 
-  // 2. Load User-Specific Data from LocalStorage when currentUser changes
+  // 2. Load User-Specific Data from LocalStorage and Cloud when currentUser changes
   useEffect(() => {
     if (!currentUser) {
       setWords([]);
@@ -185,9 +186,21 @@ export default function App() {
     setCategories(loadedCategories);
     setHistory(loadedHistory);
 
-    // Initial save if empty to guarantee structure for this user
+    // Initial local save if empty to guarantee structure for this user
     if (!storedWords) localStorage.setItem(`yodlash_words_${userId}`, JSON.stringify(INITIAL_WORDS));
     if (!storedCategories) localStorage.setItem(`yodlash_categories_${userId}`, JSON.stringify(INITIAL_CATEGORIES));
+
+    // Fetch latest synced data from server in the background
+    fetchUserDataFromServer(userId).then((serverData) => {
+      if (serverData) {
+        setWords(serverData.words || []);
+        setCategories(serverData.categories || []);
+        setHistory(serverData.history || []);
+      } else {
+        // If no cloud data found yet, upload local data to start tracking on server
+        syncAllLocalDataToServer(userId);
+      }
+    });
   }, [currentUser]);
 
   // 3. Recalculate stats whenever user words, history change
@@ -272,6 +285,7 @@ export default function App() {
     setWords(updatedWords);
     if (currentUser) {
       localStorage.setItem(`yodlash_words_${currentUser.id}`, JSON.stringify(updatedWords));
+      syncAllLocalDataToServer(currentUser.id);
     }
   };
 
@@ -279,6 +293,7 @@ export default function App() {
     setCategories(updatedCats);
     if (currentUser) {
       localStorage.setItem(`yodlash_categories_${currentUser.id}`, JSON.stringify(updatedCats));
+      syncAllLocalDataToServer(currentUser.id);
     }
   };
 
@@ -408,6 +423,9 @@ export default function App() {
     const updatedHistory = [...history, newHistoryItem];
     setHistory(updatedHistory);
     localStorage.setItem(`yodlash_history_${userId}`, JSON.stringify(updatedHistory));
+    
+    // Trigger backup sync to server
+    syncAllLocalDataToServer(userId);
   };
 
   // Reset metrics
@@ -434,8 +452,12 @@ export default function App() {
           correctStreak: 0,
           status: 'learning' as const
         }));
-        saveWordsToStorage(resetWords);
+        setWords(resetWords);
+        localStorage.setItem(`yodlash_words_${userId}`, JSON.stringify(resetWords));
         setConfirmState(prev => ({ ...prev, isOpen: false }));
+
+        // Trigger backup sync to server
+        syncAllLocalDataToServer(userId);
       }
     });
   };

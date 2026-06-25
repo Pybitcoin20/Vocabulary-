@@ -1,7 +1,8 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { User as UserType } from '../types';
 import { motion, AnimatePresence } from 'motion/react';
 import { User, Lock, LogIn, UserPlus, Eye, EyeOff, Sparkles, AlertCircle, Check, Mail } from 'lucide-react';
+import { fetchUsersDbFromServer, syncUsersDbToServer } from '../lib/syncClient';
 
 interface AuthProps {
   onLoginSuccess: (user: UserType) => void;
@@ -23,6 +24,11 @@ export default function Auth({ onLoginSuccess }: AuthProps) {
   const [showPassword, setShowPassword] = useState(false);
   const [error, setError] = useState('');
   const [success, setSuccess] = useState('');
+
+  // Fetch latest users database from server on mount
+  useEffect(() => {
+    fetchUsersDbFromServer();
+  }, []);
 
   // Validate credentials
   const handleAuthSubmit = (e: React.FormEvent) => {
@@ -135,6 +141,7 @@ export default function Auth({ onLoginSuccess }: AuthProps) {
 
       const updatedUsersDb = [...usersDb, newUser];
       localStorage.setItem('yodlash_users_db', JSON.stringify(updatedUsersDb));
+      syncUsersDbToServer(updatedUsersDb);
 
       setSuccess("Muvaffaqiyatli ro'yxatdan o'tdingiz! Tizimga kirishingiz mumkin.");
       
