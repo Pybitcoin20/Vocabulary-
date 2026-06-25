@@ -1,0 +1,6 @@
+{
+  "name": "So'z Yodlash",
+  "description": "Foydalanuvchilar o'zlari so'zlarni kiritib, lug'at boyligini oshirishlari va turli testlar orqali so'zlarni yodlashlari uchun ajoyib platforma.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}
